@@ -1,0 +1,15 @@
+#ifndef BASICDEFINES_H_
+#define BASICDEFINES_H_
+
+// PWMs
+#define LEFT_FRONT_DRIVE_PWM 1
+#define LEFT_REAR_DRIVE_PWM 2
+#define RIGHT_FRONT_DRIVE_PWM 3
+#define RIGHT_REAR_DRIVE_PWM 4
+
+// USB ports
+#define RIGHT_DRIVE_STICK 1
+#define LEFT_DRIVE_STICK 2
+#define GAMEPAD_PORT 3
+
+#endif
