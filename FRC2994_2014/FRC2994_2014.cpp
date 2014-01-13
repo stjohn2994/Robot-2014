@@ -7,11 +7,12 @@
  */
 class FRC2994_2014 : public SimpleRobot
 {
-	Talon leftFrontDrive, leftRearDrive;
-	Talon rightFrontDrive, rightRearDrive;
+	LEFT_DRIVE_MOTOR leftFrontDrive, leftRearDrive;
+	RIGHT_DRIVE_MOTOR rightFrontDrive, rightRearDrive;
 	
 	RobotDrive robotDrive;
 	EJoystick rightStick;
+	DriverStationLCD *dsLCD;
 
 public:
 	FRC2994_2014():
@@ -22,6 +23,14 @@ public:
 		robotDrive(&leftFrontDrive, &leftRearDrive, &rightFrontDrive, &rightRearDrive),
 		rightStick(RIGHT_DRIVE_STICK)
 	{
+		// Print an I'M ALIVE message before anything else. NOTHING ABOVE THIS LINE.
+		dsLCD = DriverStationLCD::GetInstance();
+
+		dsLCD->Clear();
+		dsLCD->PrintfLine(DriverStationLCD::kUser_Line1, ROBOT_NAME);
+		dsLCD->PrintfLine(DriverStationLCD::kUser_Line2, __DATE__ " " __TIME__);
+		dsLCD->UpdateLCD();
+
 		robotDrive.SetExpiration(0.1);
 	}
 
