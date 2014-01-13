@@ -1,5 +1,6 @@
 #include "WPILib.h"
 #include "BasicDefines.h"
+#include "EJoystick.h"
 
 /*
  * This is the code for the 2994 2014 robot! :-)
@@ -10,7 +11,7 @@ class FRC2994_2014 : public SimpleRobot
 	Talon rightFrontDrive, rightRearDrive;
 	
 	RobotDrive robotDrive;
-	Joystick rightStick;
+	EJoystick rightStick;
 
 public:
 	FRC2994_2014():
@@ -25,7 +26,7 @@ public:
 	}
 
 	/**
-	 * Code to be run autonomously for the first ten seconds of the match.
+	 * Code to be run autonomously for the first ten (10) seconds of the match.
 	 */
 	void Autonomous()
 	{
