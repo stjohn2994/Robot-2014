@@ -37,6 +37,9 @@ public:
 	 */
 	void OperatorControl()
 	{
+		/* TODO: Investigate. At least year's (GTR East) competition, we reached the conclusion that disabling this was 
+		 * the only way we could get out robot code to work (reliably). Should this be set to false?
+		 */ 
 		robotDrive.SetSafetyEnabled(true);
 		while (IsOperatorControl())
 		{
