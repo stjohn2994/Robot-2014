@@ -41,7 +41,27 @@ public:
 	{
 		robotDrive.SetSafetyEnabled(false);
 	}
-
+	
+	void HandleDriverInputs()
+	{
+		
+	}
+	
+	void HandleIntake()
+	{
+		
+	}
+	
+	void HandleShooter()
+	{
+		
+	}
+	
+	void HandleArm()
+	{
+		
+	}
+	
 	/**
 	 * Code to be run during the remaining 2:20 of the match (after Autonomous())
 	 */
@@ -65,6 +85,7 @@ public:
 	{
 
 	}
+	
 };
 
 START_ROBOT_CLASS(FRC2994_2014);
