@@ -35,6 +35,13 @@
 #define LEFT_DRIVE_STICK 2
 #define GAMEPAD_PORT 3
 
+// Left Joystick
+#define BUTTON_SHIFT 7
+
+// Gamepad
+#define BUTTON_COLLECT 3
+#define BUTTON_EJECT 2
+
 #ifdef PLYBOY
 #define ROBOT_NAME "PLYBOY"
 #define LEFT_DRIVE_MOTOR Jaguar
