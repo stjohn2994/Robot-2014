@@ -2,23 +2,27 @@
 #include "BasicDefines.h"
 #include "EJoystick.h"
 
-/*
- * This is the code for the 2994 2014 robot! :-)
- */
+// This is the code for the 2994 2014 robot! :-)
 class FRC2994_2014 : public SimpleRobot
 {
+	// Motor controllers.
 	LEFT_DRIVE_MOTOR leftFrontDrive, leftRearDrive;
 	RIGHT_DRIVE_MOTOR rightFrontDrive, rightRearDrive;
 	INTAKE_MOTOR intake1, intake2;
 	WINCH_MOTOR winch;
 	
+	// Robot drive
 	RobotDrive robotDrive;
+	
+	// USB devices
 	EJoystick rightStick;
 	EJoystick leftStick;
 	EGamepad gamepad;
 	
+	// Solenoids
 	DoubleSolenoid shifters;
 	
+	// Misc.
 	DriverStationLCD *dsLCD;
 
 public:
@@ -47,65 +51,57 @@ public:
 		robotDrive.SetExpiration(0.1);
 	}
 
-	/**
-	 * Code to be run autonomously for the first ten (10) seconds of the match.
-	 */
+	// Autonomous
+	//	* Code to be run autonomously for the first ten (10) seconds of the match.
 	void Autonomous()
 	{
 		robotDrive.SetSafetyEnabled(false);
 	}
 	
-	/**
-	 * HandleDriverInputs
-	 * Drive motors according to joystick values
-	 * Shift (Button 7 on left joystick) ----> ASSUMES kForward = high gear
-	 */
+	// HandleDriverInputs
+	//	* Drive motors according to joystick values
+	//	* Shift (Button 7 on left joystick)
+	//		----> ASSUMES kForward = high gear
 	void HandleDriverInputs()
 	{
 		
 	}
-	
-	/**
-	 * HandleIntake
-	 * Toggles collection and eject mode (Gamepad button 4)
-	 * 		----> ASSUMES positive values = collecting
-	 */
+
+	// HandleIntake
+	//	* Toggles collection and eject mode (Gamepad button 4)
+	//		----> ASSUMES positive values = collecting
 	void HandleIntake()
 	{
 		
 	}
 	
-	/**
-	 * HandleShooter
-	 * Manage winch motor state.
-	 */
+	// HandleShooter
+	//	* Manage winch motor state.
 	void HandleShooter()
 	{
 		
 	}
 	
-	/**
-	 * HandleArm
-	 * 
-	 */
+	// HandleArm
+	//	* Manage solenoids for arm up-down
 	void HandleArm()
 	{
 		
 	}
 	
+	// RegisterButtons
+	//	* Register all the buttons required
 	void RegisterButtons()
 	{
 		leftStick.EnableButton(BUTTON_SHIFT);
 		gamepad.EnableButton(BUTTON_COLLECT);
 		gamepad.EnableButton(BUTTON_EJECT);
 	}
-	
-	/**
-	 * Code to be run during the remaining 2:20 of the match (after Autonomous())
-	 * 
-	 * OperatorControl
-	 * Calls all the above methods
-	 */
+
+	// Code to be run during the remaining 2:20 of the match (after Autonomous())
+	//
+	// OperatorControl
+	//	* Calls all the above methods
 	void OperatorControl()
 	{
 		/* TODO: Investigate. At least year's (GTR East) competition, we reached the conclusion that disabling this was 
@@ -118,15 +114,14 @@ public:
 			Wait(0.005);
 		}
 	}
-	
-	/**
-	 * Runs during test mode
-	 */
+
+	// Runs during test mode
+	// Test
+	// * 
 	void Test()
 	{
 
 	}
-	
 };
 
 START_ROBOT_CLASS(FRC2994_2014);
