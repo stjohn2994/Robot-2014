@@ -22,6 +22,11 @@ class FRC2994_2014 : public SimpleRobot
 	
 	// Solenoids
 	DoubleSolenoid shifters;
+	DoubleSolenoid arm;
+	DoubleSolenoid eject; 
+	
+	// Digital IOs
+	EDigitalInput winchSwitch;
 	
 	// Misc.
 	DriverStationLCD *dsLCD;
@@ -39,7 +44,9 @@ public:
 		rightStick(RIGHT_DRIVE_STICK),
 		leftStick(LEFT_DRIVE_STICK),
 		gamepad(GAMEPAD_PORT),
-	    shifters(SHIFTER_A, SHIFTER_B)
+	    shifters(SHIFTER_A, SHIFTER_B),
+	    arm(ARM_A, ARM_B),
+	    eject(EJECT_A, EJECT_B)
 	{
 		// Print an I'M ALIVE message before anything else. NOTHING ABOVE THIS LINE.
 		dsLCD = DriverStationLCD::GetInstance();
