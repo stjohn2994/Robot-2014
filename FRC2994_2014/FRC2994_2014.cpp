@@ -2,6 +2,7 @@
 #include "BasicDefines.h"
 #include "EJoystick.h"
 #include "EGamepad.h"
+#include "EDigitalInput.h"
 
 // This is the code for the 2994 2014 robot! :-)
 class FRC2994_2014 : public SimpleRobot
@@ -46,7 +47,8 @@ public:
 		gamepad(GAMEPAD_PORT),
 	    shifters(SHIFTER_A, SHIFTER_B),
 	    arm(ARM_A, ARM_B),
-	    eject(EJECT_A, EJECT_B)
+	    eject(EJECT_A, EJECT_B),
+	    winchSwitch(WINCH_SWITCH)
 	{
 		// Print an I'M ALIVE message before anything else. NOTHING ABOVE THIS LINE.
 		dsLCD = DriverStationLCD::GetInstance();
@@ -55,8 +57,9 @@ public:
 		dsLCD->PrintfLine(DriverStationLCD::kUser_Line1, ROBOT_NAME);
 		dsLCD->PrintfLine(DriverStationLCD::kUser_Line2, __DATE__ " " __TIME__);
 		dsLCD->UpdateLCD();
-
-		robotDrive.SetExpiration(0.1);
+		
+		// Set the experation to 1.5 times the loop speed.
+		robotDrive.SetExpiration(LOOP_PERIOD*1.5);
 	}
 
 	// Autonomous
@@ -119,16 +122,19 @@ public:
 		 */ 
 		robotDrive.SetSafetyEnabled(true);
 		
+		Timer clock;
+		
 		RegisterButtons();
 		while (IsOperatorControl())
 		{
+			clock.Start();
+			
 			HandleDriverInputs();
 			HandleShooter();
 			HandleArm();
 			HandleEject();
 			
-			robotDrive.ArcadeDrive(rightStick);
-			Wait(0.005);
+			while (!clock.HasPeriodPassed(LOOP_PERIOD));
 		}
 	}
 

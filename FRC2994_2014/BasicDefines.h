@@ -42,6 +42,9 @@
 #define BUTTON_COLLECT 3
 #define BUTTON_EJECT 2
 
+// Misc
+#define LOOP_PERIOD 0.01
+
 #ifdef PLYBOY
 #define ROBOT_NAME "PLYBOY"
 #define LEFT_DRIVE_MOTOR Jaguar
