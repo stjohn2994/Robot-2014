@@ -1,6 +1,7 @@
 #include "WPILib.h"
 #include "BasicDefines.h"
 #include "EJoystick.h"
+#include "EGamepad.h"
 
 // This is the code for the 2994 2014 robot! :-)
 class FRC2994_2014 : public SimpleRobot
@@ -66,17 +67,11 @@ public:
 	{
 		
 	}
-
-	// HandleIntake
-	//	* Toggles collection and eject mode (Gamepad button 4)
-	//		----> ASSUMES positive values = collecting
-	void HandleIntake()
-	{
-		
-	}
 	
 	// HandleShooter
 	//	* Manage winch motor state.
+	//	* Toggles collection and eject mode (Gamepad button 4)
+	//		----> ASSUMES positive values = collecting
 	void HandleShooter()
 	{
 		
@@ -88,6 +83,14 @@ public:
 	{
 		
 	}
+	
+	// HandleEject
+	//	* Toggle intake motors (in opp. direction)
+	void HandleEject() 
+	{
+		
+	}
+	
 	
 	// RegisterButtons
 	//	* Register all the buttons required
@@ -108,8 +111,15 @@ public:
 		 * the only way we could get out robot code to work (reliably). Should this be set to false?
 		 */ 
 		robotDrive.SetSafetyEnabled(true);
+		
+		RegisterButtons();
 		while (IsOperatorControl())
 		{
+			HandleDriverInputs();
+			HandleShooter();
+			HandleArm();
+			HandleEject();
+			
 			robotDrive.ArcadeDrive(rightStick);
 			Wait(0.005);
 		}
