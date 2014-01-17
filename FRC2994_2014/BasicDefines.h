@@ -15,9 +15,8 @@
 #define LEFT_REAR_DRIVE_PWM 2
 #define RIGHT_FRONT_DRIVE_PWM 3
 #define RIGHT_REAR_DRIVE_PWM 4
-#define INTAKE_MOTOR_1_PWM 5
-#define INTAKE_MOTOR_2_PWM 6
-#define WINCH_MOTOR_PWM 7
+#define INTAKE_MOTOR_PWM 5
+#define WINCH_MOTOR_PWM 6
 
 // Solenoids
 #define SHIFTER_A 1
@@ -42,7 +41,7 @@
 #define BUTTON_COLLECT 3
 #define BUTTON_EJECT 2
 
-// Misc
+// Misc.
 #define LOOP_PERIOD 0.01
 
 #ifdef PLYBOY

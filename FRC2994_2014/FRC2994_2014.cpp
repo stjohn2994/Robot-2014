@@ -10,7 +10,7 @@ class FRC2994_2014 : public SimpleRobot
 	// Motor controllers.
 	LEFT_DRIVE_MOTOR leftFrontDrive, leftRearDrive;
 	RIGHT_DRIVE_MOTOR rightFrontDrive, rightRearDrive;
-	INTAKE_MOTOR intake1, intake2;
+	INTAKE_MOTOR intake;
 	WINCH_MOTOR winch;
 	
 	// Robot drive
@@ -38,8 +38,7 @@ public:
 		leftRearDrive(LEFT_REAR_DRIVE_PWM),
 		rightFrontDrive(RIGHT_FRONT_DRIVE_PWM),
 		rightRearDrive(RIGHT_REAR_DRIVE_PWM),
-		intake1(INTAKE_MOTOR_1_PWM),
-		intake2(INTAKE_MOTOR_2_PWM),
+		intake(INTAKE_MOTOR_PWM),
 		winch(WINCH_MOTOR_PWM),
 		robotDrive(&leftFrontDrive, &leftRearDrive, &rightFrontDrive, &rightRearDrive),
 		rightStick(RIGHT_DRIVE_STICK),
