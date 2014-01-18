@@ -129,7 +129,18 @@ public:
 	//		----> ASSUMES kForward = high gear
 	void HandleDriverInputs()
 	{
+		if(kEventOpened == stick2.GetEvent(BUTTON_SHIFT))
+		{
+			// Shift into high gear.
+			shifter.Set(DoubleSolenoid::kForward);
+		}
+		else if(kEventClosed == stick2.GetEvent(BUTTON_SHIFT))
+		{
+			// Shift into low gear.
+			shifter.Set(DoubleSolenoid::kReverse);
+		}
 		
+		robotDrive.ArcadeDrive(rightStick);
 	}
 	
 	// HandleShooter
