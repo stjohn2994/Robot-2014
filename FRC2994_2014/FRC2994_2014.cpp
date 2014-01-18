@@ -28,12 +28,15 @@ class FRC2994_2014 : public SimpleRobot
 	
 	// Digital IOs
 	EDigitalInput winchSwitch;
+	Encoder leftDriveEncoder, rightDriveEncoder;
 	
 	// Misc.
+	Timer ejectTimer;
 	DriverStationLCD *dsLCD;
 	
 	bool loaded;
 	bool loading;
+	bool armDown;
 
 public:
 	FRC2994_2014():
@@ -51,8 +54,11 @@ public:
 	    arm(ARM_A, ARM_B),
 	    eject(EJECT_A, EJECT_B),
 	    winchSwitch(WINCH_SWITCH),
+	    leftDriveEncoder(LEFT_ENCODER_A, LEFT_ENCODER_B),
+	    rightDriveEncoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B),
 	    loaded(false),
-	    loading(false)
+	    loading(false),
+	    armDown(false)
 	{
 		// Print an I'M ALIVE message before anything else. NOTHING ABOVE THIS LINE.
 		dsLCD = DriverStationLCD::GetInstance();
@@ -112,7 +118,7 @@ public:
 		double reading;
 		
 		// Start moving the robot
-		myRobot.Drive(speeds->magnitude, speeds->curve);
+		robotDrive.Drive(0.5, 0.0);
 		double initial = leftDriveEncoder.Get();
 		reading = 0;
 		
@@ -129,7 +135,18 @@ public:
 	//		----> ASSUMES kForward = high gear
 	void HandleDriverInputs()
 	{
+		if(kEventOpened == leftStick.GetEvent(BUTTON_SHIFT))
+		{
+			// Shift into high gear.
+			shifters.Set(DoubleSolenoid::kForward);
+		}
+		else if(kEventClosed == leftStick.GetEvent(BUTTON_SHIFT))
+		{
+			// Shift into low gear.
+			shifters.Set(DoubleSolenoid::kReverse);
+		}
 		
+		robotDrive.ArcadeDrive(rightStick);
 	}
 	
 	// HandleShooter
@@ -154,14 +171,48 @@ public:
 	//	* Handle intake motors
 	void HandleArm()
 	{
+		if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed && armDown)
+		{
+			arm.Set(DoubleSolenoid::kReverse);
+		}
+		else if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed)
+		{
+			arm.Set(DoubleSolenoid::kForward);
+		}
 		
+		if (gamepad.GetDPadState(EGamepad::kUp) == kStateClosed)
+		{
+			intake.Set(1.0);
+		}
+		else
+		{
+			intake.Set(0.0);
+		}
+		if(gamepad.GetDPadState(EGamepad::kDown) == kStateClosed)
+		{
+			intake.Set(-1.0);
+		}
+		else
+		{
+			intake.Set(0.0);
+		}
 	}
 	
 	// HandleEject
 	//	* Toggle intake motors (in opp. direction)
 	void HandleEject() 
 	{
-		
+		if (gamepad.GetEvent(BUTTON_PASS) == kEventClosed)
+		{
+			ejectTimer.Start();
+			eject.Set(DoubleSolenoid::kForward);
+		}
+		if (ejectTimer.HasPeriodPassed(EJECT_WAIT))
+		{
+			ejectTimer.Stop();
+			ejectTimer.Reset();
+			eject.Set(DoubleSolenoid::kReverse);
+		}
 	}
 	
 	
@@ -172,6 +223,8 @@ public:
 		leftStick.EnableButton(BUTTON_SHIFT);
 		gamepad.EnableButton(BUTTON_LOAD);
 		gamepad.EnableButton(BUTTON_SHOOT);
+		gamepad.EnableButton(BUTTON_ARM);
+		gamepad.EnableButton(BUTTON_PASS);
 	}
 
 	// Code to be run during the remaining 2:20 of the match (after Autonomous())

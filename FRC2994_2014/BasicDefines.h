@@ -28,6 +28,10 @@
 
 // Digital I/O
 #define WINCH_SWITCH 1
+#define LEFT_ENCODER_A 2
+#define LEFT_ENCODER_B 3
+#define RIGHT_ENCODER_A 4
+#define RIGHT_ENCODER_B 5
 
 // USB ports
 #define RIGHT_DRIVE_STICK 1
@@ -40,6 +44,8 @@
 // Gamepad
 #define BUTTON_SHOOT 1
 #define BUTTON_LOAD 4
+#define BUTTON_ARM 5
+#define BUTTON_PASS 7
 
 // Motor speeds
 #define WINCH_FWD 1.0
@@ -51,6 +57,7 @@
 #define ENCODER_DIST 9000
 // Time to wait after running motor to launch shooter before turning motor off
 #define CATAPULT_SHOOT_WAIT 0.5
+#define EJECT_WAIT 2.0
 
 #ifdef PLYBOY
 #define ROBOT_NAME "PLYBOY"
