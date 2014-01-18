@@ -178,6 +178,23 @@ public:
 		{
 			arm.Set(DoubleSolenoid::kForward);
 		}
+		
+		if (gamepad.GetDPadState(EGamepad::kUp) == kStateClosed)
+		{
+			intake.Set(1.0);
+		}
+		else
+		{
+			intake.Set(0.0);
+		}
+		if(gamepad.GetDPadState(EGamepad::kDown) == kStateClosed)
+		{
+			intake.Set(-1.0);
+		}
+		else
+		{
+			intake.Set(0.0);
+		}
 	}
 	
 	// HandleEject
