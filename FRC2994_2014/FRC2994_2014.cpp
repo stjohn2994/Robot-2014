@@ -28,6 +28,7 @@ class FRC2994_2014 : public SimpleRobot
 	
 	// Digital IOs
 	EDigitalInput winchSwitch;
+	Encoder leftDriveEncoder, rightDriveEncoder;
 	
 	// Misc.
 	DriverStationLCD *dsLCD;
@@ -52,6 +53,8 @@ public:
 	    arm(ARM_A, ARM_B),
 	    eject(EJECT_A, EJECT_B),
 	    winchSwitch(WINCH_SWITCH),
+	    leftDriveEncoder(LEFT_ENCODER_A, LEFT_ENCODER_B),
+	    rightDriveEncoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B),
 	    loaded(false),
 	    loading(false),
 	    armDown(false)
@@ -114,7 +117,7 @@ public:
 		double reading;
 		
 		// Start moving the robot
-		myRobot.Drive(speeds->magnitude, speeds->curve);
+		robotDrive.Drive(0.5, 0.0);
 		double initial = leftDriveEncoder.Get();
 		reading = 0;
 		
@@ -131,15 +134,15 @@ public:
 	//		----> ASSUMES kForward = high gear
 	void HandleDriverInputs()
 	{
-		if(kEventOpened == stick2.GetEvent(BUTTON_SHIFT))
+		if(kEventOpened == leftStick.GetEvent(BUTTON_SHIFT))
 		{
 			// Shift into high gear.
-			shifter.Set(DoubleSolenoid::kForward);
+			shifters.Set(DoubleSolenoid::kForward);
 		}
-		else if(kEventClosed == stick2.GetEvent(BUTTON_SHIFT))
+		else if(kEventClosed == leftStick.GetEvent(BUTTON_SHIFT))
 		{
 			// Shift into low gear.
-			shifter.Set(DoubleSolenoid::kReverse);
+			shifters.Set(DoubleSolenoid::kReverse);
 		}
 		
 		robotDrive.ArcadeDrive(rightStick);
