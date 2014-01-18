@@ -28,6 +28,10 @@
 
 // Digital I/O
 #define WINCH_SWITCH 1
+#define LEFT_ENCODER_A 2
+#define LEFT_ENCODER_B 3
+#define RIGHT_ENCODER_A 4
+#define RIGHT_ENCODER_B 5
 
 // USB ports
 #define RIGHT_DRIVE_STICK 1
