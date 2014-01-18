@@ -31,6 +31,7 @@ class FRC2994_2014 : public SimpleRobot
 	Encoder leftDriveEncoder, rightDriveEncoder;
 	
 	// Misc.
+	Timer ejectTimer;
 	DriverStationLCD *dsLCD;
 	
 	bool loaded;
@@ -201,7 +202,17 @@ public:
 	//	* Toggle intake motors (in opp. direction)
 	void HandleEject() 
 	{
-		
+		if (gamepad.GetEvent(BUTTON_PASS) == kEventClosed)
+		{
+			ejectTimer.Start();
+			eject.Set(DoubleSolenoid::kForward);
+		}
+		if (ejectTimer.HasPeriodPassed(EJECT_WAIT))
+		{
+			ejectTimer.Stop();
+			ejectTimer.Reset();
+			eject.Set(DoubleSolenoid::kReverse);
+		}
 	}
 	
 	
