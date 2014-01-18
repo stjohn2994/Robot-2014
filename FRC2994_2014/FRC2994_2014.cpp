@@ -138,11 +138,20 @@ public:
 	//		----> ASSUMES positive values = collecting
 	void HandleShooter()
 	{
-		
+		if (gamepad.GetEvent(BUTTON_LOAD) == kEventClosed) {
+			InitiateLoad();
+		}
+		if (loading) {
+			CheckLoad();
+		}
+		if (gamepad.GetEvent(BUTTON_SHOOT) == kEventClosed) {
+			LaunchCatapult();
+		}
 	}
 	
 	// HandleArm
 	//	* Manage solenoids for arm up-down
+	//	* Handle intake motors
 	void HandleArm()
 	{
 		
@@ -161,8 +170,8 @@ public:
 	void RegisterButtons()
 	{
 		leftStick.EnableButton(BUTTON_SHIFT);
-		gamepad.EnableButton(BUTTON_COLLECT);
-		gamepad.EnableButton(BUTTON_EJECT);
+		gamepad.EnableButton(BUTTON_LOAD);
+		gamepad.EnableButton(BUTTON_SHOOT);
 	}
 
 	// Code to be run during the remaining 2:20 of the match (after Autonomous())
