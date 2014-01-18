@@ -57,7 +57,7 @@
 #define ENCODER_DIST 9000
 // Time to wait after running motor to launch shooter before turning motor off
 #define CATAPULT_SHOOT_WAIT 0.5
-#define EJECT_TIMER 2.0
+#define EJECT_WAIT 2.0
 
 #ifdef PLYBOY
 #define ROBOT_NAME "PLYBOY"
