@@ -38,11 +38,19 @@
 #define BUTTON_SHIFT 7
 
 // Gamepad
-#define BUTTON_COLLECT 3
-#define BUTTON_EJECT 2
+#define BUTTON_SHOOT 1
+#define BUTTON_LOAD 4
+
+// Motor speeds
+#define WINCH_FWD 1.0
 
 // Misc.
 #define LOOP_PERIOD 0.01
+// # of encoder ticks to drive for in auto
+// TODO: Determine empirically.
+#define ENCODER_DIST 9000
+// Time to wait after running motor to launch shooter before turning motor off
+#define CATAPULT_SHOOT_WAIT 0.5
 
 #ifdef PLYBOY
 #define ROBOT_NAME "PLYBOY"

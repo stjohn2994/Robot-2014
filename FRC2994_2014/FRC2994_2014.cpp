@@ -31,6 +31,9 @@ class FRC2994_2014 : public SimpleRobot
 	
 	// Misc.
 	DriverStationLCD *dsLCD;
+	
+	bool loaded;
+	bool loading;
 
 public:
 	FRC2994_2014():
@@ -47,7 +50,9 @@ public:
 	    shifters(SHIFTER_A, SHIFTER_B),
 	    arm(ARM_A, ARM_B),
 	    eject(EJECT_A, EJECT_B),
-	    winchSwitch(WINCH_SWITCH)
+	    winchSwitch(WINCH_SWITCH),
+	    loaded(false),
+	    loading(false)
 	{
 		// Print an I'M ALIVE message before anything else. NOTHING ABOVE THIS LINE.
 		dsLCD = DriverStationLCD::GetInstance();
@@ -60,12 +65,62 @@ public:
 		// Set the experation to 1.5 times the loop speed.
 		robotDrive.SetExpiration(LOOP_PERIOD*1.5);
 	}
+	
+	void CheckLoad()
+	{
+		// Switch is normally closed?
+		if (!winchSwitch.Get()) {
+			winch.Set(0.0);
+			loaded = true;
+			loading = false;
+		}
+	}
+	
+	void InitiateLoad()
+	{
+		if (!loaded)
+		{
+			winch.Set(WINCH_FWD);
+			loading = true;
+		}
+	}
+	
+	void LaunchCatapult()
+	{
+		if (loaded)
+		{
+			winch.Set(WINCH_FWD);
+			Wait(CATAPULT_SHOOT_WAIT);
+			winch.Set(0.0);
+			loaded = false;
+		}
+	}
 
 	// Autonomous
 	//	* Code to be run autonomously for the first ten (10) seconds of the match.
+	//	* Launch catapult
+	//	* Drive robot forward ENCODER_DIST ticks.
 	void Autonomous()
 	{
 		robotDrive.SetSafetyEnabled(false);
+		
+		loaded = true;
+		LaunchCatapult();
+		
+		leftDriveEncoder.Reset();
+		double dist = ENCODER_DIST;
+		double reading;
+		
+		// Start moving the robot
+		myRobot.Drive(speeds->magnitude, speeds->curve);
+		double initial = leftDriveEncoder.Get();
+		reading = 0;
+		
+		while (IsAutonomous() && (reading <= dist))
+		{
+			reading = (leftDriveEncoder.GetDistance() - initial);
+			dsLCD->UpdateLCD();
+		}	
 	}
 	
 	// HandleDriverInputs
