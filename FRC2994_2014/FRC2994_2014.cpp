@@ -34,6 +34,7 @@ class FRC2994_2014 : public SimpleRobot
 	
 	bool loaded;
 	bool loading;
+	bool armDown;
 
 public:
 	FRC2994_2014():
@@ -52,7 +53,8 @@ public:
 	    eject(EJECT_A, EJECT_B),
 	    winchSwitch(WINCH_SWITCH),
 	    loaded(false),
-	    loading(false)
+	    loading(false),
+	    armDown(false)
 	{
 		// Print an I'M ALIVE message before anything else. NOTHING ABOVE THIS LINE.
 		dsLCD = DriverStationLCD::GetInstance();
@@ -165,7 +167,14 @@ public:
 	//	* Handle intake motors
 	void HandleArm()
 	{
-		
+		if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed && armDown)
+		{
+			arm.Set(DoubleSolenoid::kReverse);
+		}
+		else if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed)
+		{
+			arm.Set(DoubleSolenoid::kForward);
+		}
 	}
 	
 	// HandleEject
@@ -183,6 +192,8 @@ public:
 		leftStick.EnableButton(BUTTON_SHIFT);
 		gamepad.EnableButton(BUTTON_LOAD);
 		gamepad.EnableButton(BUTTON_SHOOT);
+		gamepad.EnableButton(BUTTON_ARM);
+		gamepad.EnableButton(BUTTON_PASS);
 	}
 
 	// Code to be run during the remaining 2:20 of the match (after Autonomous())
