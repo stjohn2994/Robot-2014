@@ -252,6 +252,7 @@ public:
 			HandleEject();
 
 			while (!clock.HasPeriodPassed(LOOP_PERIOD));
+			clock.Reset();
 		}
 	}
 
