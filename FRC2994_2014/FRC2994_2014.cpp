@@ -56,7 +56,8 @@ public:
 		winchSwitch(WINCH_SWITCH),
 		leftDriveEncoder(LEFT_ENCODER_A, LEFT_ENCODER_B),
 		rightDriveEncoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B),
-		loaded(false),
+		// Robot starts off in a loaded state so a ball can be fit in
+		loaded(true),
 		loading(false),
 		armDown(false)
 	{
@@ -71,17 +72,24 @@ public:
 		// Set the experation to 1.5 times the loop speed.
 		robotDrive.SetExpiration(LOOP_PERIOD*1.5);
 	}
-
+	
+	// CheckLoad
+	//	* Checks if the winch switch has been pressed.
+	//		----> If yes, makes sure the state of the motors and variables is correct.
+	//	* Should be called every tick of an operator control loop to ensure that
+	//	  the motor is shut off as soon as possible.
 	void CheckLoad()
 	{
-		// Switch is normally closed?
-		if (!winchSwitch.Get()) {
+		// Switch is normally closed
+		if (loading && !winchSwitch.Get()) {
 			winch.Set(0.0);
 			loaded = true;
 			loading = false;
 		}
 	}
-
+	
+	// InitiateLoad
+	//	* Begins a load of the catapult by running the winch motor.
 	void InitiateLoad()
 	{
 		if (!loaded)
@@ -90,7 +98,9 @@ public:
 			loading = true;
 		}
 	}
-
+	
+	// LaunchCatapult
+	//	* If in the correct state to launch (loaded), launches the catapult.
 	void LaunchCatapult()
 	{
 		if (loaded)
@@ -109,23 +119,22 @@ public:
 	void Autonomous()
 	{
 		robotDrive.SetSafetyEnabled(false);
-
-		loaded = true;
+		
 		LaunchCatapult();
 
 		leftDriveEncoder.Reset();
 		double dist = ENCODER_DIST;
-		double reading;
-
-		// Start moving the robot
-		robotDrive.Drive(0.5, 0.0);
+		double reading = 0;
+		// The encoder.Reset() method seems not to set Get() values back to zero,
+		// so we use a variable to capture the initial value.
 		double initial = leftDriveEncoder.Get();
-		reading = 0;
+		
+		// Start moving the robot
+		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
 
 		while (IsAutonomous() && (reading <= dist))
 		{
 			reading = (leftDriveEncoder.GetDistance() - initial);
-			dsLCD->UpdateLCD();
 		}	
 	}
 
@@ -168,6 +177,7 @@ public:
 
 	// HandleArm
 	//	* Manage solenoids for arm up-down
+	//		----> ASSUMES kForward on DoubleSolenoid is the down position.
 	//	* Handle intake motors
 	void HandleArm()
 	{
@@ -199,7 +209,7 @@ public:
 	}
 
 	// HandleEject
-	//	* Toggle intake motors (in opp. direction)
+	//	* Handle eject piston.
 	void HandleEject() 
 	{
 		if (gamepad.GetEvent(BUTTON_PASS) == kEventClosed)
@@ -209,8 +219,8 @@ public:
 		}
 		if (ejectTimer.HasPeriodPassed(EJECT_WAIT))
 		{
-			ejectTimer.Stop();
 			ejectTimer.Reset();
+			ejectTimer.Stop();
 			eject.Set(DoubleSolenoid::kReverse);
 		}
 	}
