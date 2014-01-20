@@ -12,28 +12,28 @@ class FRC2994_2014 : public SimpleRobot
 	RIGHT_DRIVE_MOTOR rightFrontDrive, rightRearDrive;
 	INTAKE_MOTOR intake;
 	WINCH_MOTOR winch;
-	
+
 	// Robot drive
 	RobotDrive robotDrive;
-	
+
 	// USB devices
 	EJoystick rightStick;
 	EJoystick leftStick;
 	EGamepad gamepad;
-	
+
 	// Solenoids
 	DoubleSolenoid shifters;
 	DoubleSolenoid arm;
 	DoubleSolenoid eject; 
-	
+
 	// Digital IOs
 	EDigitalInput winchSwitch;
 	Encoder leftDriveEncoder, rightDriveEncoder;
-	
+
 	// Misc.
 	Timer ejectTimer;
 	DriverStationLCD *dsLCD;
-	
+
 	bool loaded;
 	bool loading;
 	bool armDown;
@@ -50,15 +50,15 @@ public:
 		rightStick(RIGHT_DRIVE_STICK),
 		leftStick(LEFT_DRIVE_STICK),
 		gamepad(GAMEPAD_PORT),
-	    shifters(SHIFTER_A, SHIFTER_B),
-	    arm(ARM_A, ARM_B),
-	    eject(EJECT_A, EJECT_B),
-	    winchSwitch(WINCH_SWITCH),
-	    leftDriveEncoder(LEFT_ENCODER_A, LEFT_ENCODER_B),
-	    rightDriveEncoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B),
-	    loaded(false),
-	    loading(false),
-	    armDown(false)
+		shifters(SHIFTER_A, SHIFTER_B),
+		arm(ARM_A, ARM_B),
+		eject(EJECT_A, EJECT_B),
+		winchSwitch(WINCH_SWITCH),
+		leftDriveEncoder(LEFT_ENCODER_A, LEFT_ENCODER_B),
+		rightDriveEncoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B),
+		loaded(false),
+		loading(false),
+		armDown(false)
 	{
 		// Print an I'M ALIVE message before anything else. NOTHING ABOVE THIS LINE.
 		dsLCD = DriverStationLCD::GetInstance();
@@ -67,11 +67,11 @@ public:
 		dsLCD->PrintfLine(DriverStationLCD::kUser_Line1, ROBOT_NAME);
 		dsLCD->PrintfLine(DriverStationLCD::kUser_Line2, __DATE__ " " __TIME__);
 		dsLCD->UpdateLCD();
-		
+
 		// Set the experation to 1.5 times the loop speed.
 		robotDrive.SetExpiration(LOOP_PERIOD*1.5);
 	}
-	
+
 	void CheckLoad()
 	{
 		// Switch is normally closed?
@@ -81,7 +81,7 @@ public:
 			loading = false;
 		}
 	}
-	
+
 	void InitiateLoad()
 	{
 		if (!loaded)
@@ -90,7 +90,7 @@ public:
 			loading = true;
 		}
 	}
-	
+
 	void LaunchCatapult()
 	{
 		if (loaded)
@@ -109,26 +109,26 @@ public:
 	void Autonomous()
 	{
 		robotDrive.SetSafetyEnabled(false);
-		
+
 		loaded = true;
 		LaunchCatapult();
-		
+
 		leftDriveEncoder.Reset();
 		double dist = ENCODER_DIST;
 		double reading;
-		
+
 		// Start moving the robot
 		robotDrive.Drive(0.5, 0.0);
 		double initial = leftDriveEncoder.Get();
 		reading = 0;
-		
+
 		while (IsAutonomous() && (reading <= dist))
 		{
 			reading = (leftDriveEncoder.GetDistance() - initial);
 			dsLCD->UpdateLCD();
 		}	
 	}
-	
+
 	// HandleDriverInputs
 	//	* Drive motors according to joystick values
 	//	* Shift (Button 7 on left joystick)
@@ -145,10 +145,10 @@ public:
 			// Shift into low gear.
 			shifters.Set(DoubleSolenoid::kReverse);
 		}
-		
+
 		robotDrive.ArcadeDrive(rightStick);
 	}
-	
+
 	// HandleShooter
 	//	* Manage winch motor state.
 	//	* Toggles collection and eject mode (Gamepad button 4)
@@ -165,7 +165,7 @@ public:
 			LaunchCatapult();
 		}
 	}
-	
+
 	// HandleArm
 	//	* Manage solenoids for arm up-down
 	//	* Handle intake motors
@@ -179,7 +179,7 @@ public:
 		{
 			arm.Set(DoubleSolenoid::kForward);
 		}
-		
+
 		if (gamepad.GetDPadState(EGamepad::kUp) == kStateClosed)
 		{
 			intake.Set(1.0);
@@ -197,7 +197,7 @@ public:
 			intake.Set(0.0);
 		}
 	}
-	
+
 	// HandleEject
 	//	* Toggle intake motors (in opp. direction)
 	void HandleEject() 
@@ -214,8 +214,8 @@ public:
 			eject.Set(DoubleSolenoid::kReverse);
 		}
 	}
-	
-	
+
+
 	// RegisterButtons
 	//	* Register all the buttons required
 	void RegisterButtons()
@@ -237,19 +237,20 @@ public:
 		 * the only way we could get out robot code to work (reliably). Should this be set to false?
 		 */ 
 		robotDrive.SetSafetyEnabled(true);
-		
+
 		Timer clock;
-		
+
 		RegisterButtons();
+		
 		while (IsOperatorControl())
 		{
 			clock.Start();
-			
+
 			HandleDriverInputs();
 			HandleShooter();
 			HandleArm();
 			HandleEject();
-			
+
 			while (!clock.HasPeriodPassed(LOOP_PERIOD));
 		}
 	}
