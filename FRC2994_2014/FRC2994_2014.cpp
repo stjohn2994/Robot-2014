@@ -81,7 +81,8 @@ public:
 	void CheckLoad()
 	{
 		// Switch is normally closed
-		if (loading && !winchSwitch.Get()) {
+		if (loading && !winchSwitch.Get()) 
+		{
 			winch.Set(0.0);
 			loaded = true;
 			loading = false;
@@ -164,13 +165,16 @@ public:
 	//		----> ASSUMES positive values = collecting
 	void HandleShooter()
 	{
-		if (gamepad.GetEvent(BUTTON_LOAD) == kEventClosed) {
+		if (gamepad.GetEvent(BUTTON_LOAD) == kEventClosed) 
+		{
 			InitiateLoad();
 		}
-		if (loading) {
+		if (loading) 
+		{
 			CheckLoad();
 		}
-		if (gamepad.GetEvent(BUTTON_SHOOT) == kEventClosed) {
+		if (gamepad.GetEvent(BUTTON_SHOOT) == kEventClosed) 
+		{
 			LaunchCatapult();
 		}
 	}
@@ -192,6 +196,7 @@ public:
 
 		if (gamepad.GetDPadState(EGamepad::kUp) == kStateClosed)
 		{
+			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "INTAKE UP");
 			intake.Set(1.0);
 		}
 		else
@@ -200,6 +205,7 @@ public:
 		}
 		if(gamepad.GetDPadState(EGamepad::kDown) == kStateClosed)
 		{
+			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "INTAKE DOWN");
 			intake.Set(-1.0);
 		}
 		else
@@ -251,7 +257,9 @@ public:
 		Timer clock;
 
 		RegisterButtons();
-		
+		gamepad.Update();
+		leftStick.Update();
+
 		while (IsOperatorControl())
 		{
 			clock.Start();
@@ -263,6 +271,9 @@ public:
 
 			while (!clock.HasPeriodPassed(LOOP_PERIOD));
 			clock.Reset();
+			gamepad.Update();
+			leftStick.Update();
+			dsLCD->UpdateLCD();
 		}
 	}
 
