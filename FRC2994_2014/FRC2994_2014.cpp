@@ -124,19 +124,19 @@ public:
 		LaunchCatapult();
 
 		leftDriveEncoder.Reset();
-		double dist = ENCODER_DIST;
-		double reading = 0;
+		int dist = ENCODER_DIST;
+		int reading = 0;
 		// The encoder.Reset() method seems not to set Get() values back to zero,
 		// so we use a variable to capture the initial value.
-		double initial = leftDriveEncoder.Get();
+		int initial = leftDriveEncoder.Get();
 		
 		// Start moving the robot
 		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
 
 		while (IsAutonomous() && (reading <= dist))
 		{
-			reading = (leftDriveEncoder.GetDistance() - initial);
-		}	
+			reading = (leftDriveEncoder.Get() - initial);
+		}
 	}
 
 	// HandleDriverInputs
@@ -194,21 +194,19 @@ public:
 			arm.Set(DoubleSolenoid::kForward);
 		}
 
-		if (gamepad.GetDPadState(EGamepad::kUp) == kStateClosed)
+		if (gamepad.GetDPadEvent(EGamepad::kUp) == kEventClosed)
 		{
-			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "INTAKE UP");
 			intake.Set(1.0);
 		}
-		else
+		else if (gamepad.GetDPadEvent(EGamepad::kUp) == kEventOpened)
 		{
 			intake.Set(0.0);
 		}
-		if(gamepad.GetDPadState(EGamepad::kDown) == kStateClosed)
+		if(gamepad.GetDPadEvent(EGamepad::kDown) == kEventClosed)
 		{
-			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "INTAKE DOWN");
 			intake.Set(-1.0);
 		}
-		else
+		else if (gamepad.GetDPadEvent(EGamepad::kDown) == kEventOpened)
 		{
 			intake.Set(0.0);
 		}
@@ -225,8 +223,8 @@ public:
 		}
 		if (ejectTimer.HasPeriodPassed(EJECT_WAIT))
 		{
-			ejectTimer.Reset();
 			ejectTimer.Stop();
+			ejectTimer.Reset();
 			eject.Set(DoubleSolenoid::kReverse);
 		}
 	}
@@ -255,6 +253,8 @@ public:
 		robotDrive.SetSafetyEnabled(true);
 
 		Timer clock;
+		int sanity = 0;
+		int bigSanity = 0;
 
 		RegisterButtons();
 		gamepad.Update();
@@ -271,6 +271,13 @@ public:
 
 			while (!clock.HasPeriodPassed(LOOP_PERIOD));
 			clock.Reset();
+			sanity++;
+			if (sanity >= 100)
+			{
+				bigSanity++;
+				sanity = 0;
+				dsLCD->PrintfLine(DriverStationLCD::kUser_Line4, "%d", bigSanity);
+			}
 			gamepad.Update();
 			leftStick.Update();
 			dsLCD->UpdateLCD();
