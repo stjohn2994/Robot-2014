@@ -266,7 +266,7 @@ public:
 		
 		compressor.Start();
 
-		while (IsOperatorControl())
+		while (IsOperatorControl()&& IsEnabled())
 		{
 			clock.Start();
 
