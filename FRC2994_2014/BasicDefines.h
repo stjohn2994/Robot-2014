@@ -28,11 +28,15 @@
 #define EJECT_B 6
 
 // Digital I/O
-#define WINCH_SWITCH 1
 #define LEFT_ENCODER_A 2
 #define LEFT_ENCODER_B 3
 #define RIGHT_ENCODER_A 4
 #define RIGHT_ENCODER_B 5
+#define COMPRESSOR_PRESSURE_SW 8
+#define WINCH_SWITCH 11
+
+// Relays
+#define COMPRESSOR_SPIKE 2
 
 // USB ports
 #define RIGHT_DRIVE_STICK 1
