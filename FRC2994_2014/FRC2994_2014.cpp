@@ -33,6 +33,7 @@ class FRC2994_2014 : public SimpleRobot
 	// Misc.
 	Timer ejectTimer;
 	DriverStationLCD *dsLCD;
+	Compressor compressor;
 
 	bool loaded;
 	bool loading;
@@ -56,6 +57,7 @@ public:
 		winchSwitch(WINCH_SWITCH),
 		leftDriveEncoder(LEFT_ENCODER_A, LEFT_ENCODER_B),
 		rightDriveEncoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B),
+		compressor(COMPRESSOR_PRESSURE_SW, COMPRESSOR_SPIKE),
 		// Robot starts off in a loaded state so a ball can be fit in
 		loaded(true),
 		loading(false),
@@ -259,6 +261,8 @@ public:
 		RegisterButtons();
 		gamepad.Update();
 		leftStick.Update();
+		
+		compressor.Start();
 
 		while (IsOperatorControl())
 		{
