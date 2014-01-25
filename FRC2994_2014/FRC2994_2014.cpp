@@ -259,6 +259,9 @@ public:
 		Timer clock;
 		int sanity = 0;
 		int bigSanity = 0;
+		
+		loading = false;
+		loaded = !winchSwitch.Get();
 
 		RegisterButtons();
 		gamepad.Update();
