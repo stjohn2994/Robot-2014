@@ -190,10 +190,12 @@ public:
 		if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed && armDown)
 		{
 			arm.Set(DoubleSolenoid::kReverse);
+			armDown = false;
 		}
 		else if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed)
 		{
 			arm.Set(DoubleSolenoid::kForward);
+			armDown = true;
 		}
 
 		if (gamepad.GetDPadEvent(EGamepad::kUp) == kEventClosed)
