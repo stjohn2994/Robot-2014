@@ -80,7 +80,7 @@ public:
 	//		----> If yes, makes sure the state of the motors and variables is correct.
 	//	* Should be called every tick of an operator control loop to ensure that
 	//	  the motor is shut off as soon as possible.
-	void CheckLoad()
+	bool CheckLoad()
 	{
 		// Switch is normally closed
 		if (loading && !winchSwitch.Get()) 
@@ -89,6 +89,8 @@ public:
 			loaded = true;
 			loading = false;
 		}
+		
+		return loaded;
 	}
 	
 	// InitiateLoad
@@ -122,7 +124,7 @@ public:
 	void Autonomous()
 	{
 		robotDrive.SetSafetyEnabled(false);
-		
+		                
 		LaunchCatapult();
 
 		leftDriveEncoder.Reset();
@@ -141,6 +143,37 @@ public:
 		}
 		
 		robotDrive.Drive(0.0, 0.0);
+		
+//		robotDrive.SetSafetyEnabled(false);
+//		
+//		LaunchCatapult();
+//		
+//		InitiateLoad();
+//		
+//		intake.Set(1.0);
+//		
+//		while (CheckLoad());
+//		
+//		arm.Set(DoubleSolenoid::kForward);
+//		
+//		LaunchCatapult();
+//		
+//		leftDriveEncoder.Reset();
+//		int dist = ENCODER_DIST;
+//		int reading = 0;
+//		// The encoder.Reset() method seems not to set Get() values back to zero,
+//		// so we use a variable to capture the initial value.
+//		int initial = leftDriveEncoder.Get();
+//		
+//		// Start moving the robot
+//		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
+//
+//		while (IsAutonomous() && (reading <= dist))
+//		{
+//			reading = (leftDriveEncoder.Get() - initial);
+//		}
+//		
+//		robotDrive.Drive(0.0, 0.0);
 	}
 
 	// HandleDriverInputs
