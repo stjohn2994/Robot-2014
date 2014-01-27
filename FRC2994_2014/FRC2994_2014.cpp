@@ -139,6 +139,8 @@ public:
 		{
 			reading = (leftDriveEncoder.Get() - initial);
 		}
+		
+		robotDrive.Drive(0.0, 0.0);
 	}
 
 	// HandleDriverInputs
