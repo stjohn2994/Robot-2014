@@ -28,8 +28,8 @@
 #define EJECT_B 6
 
 // Digital I/O
-#define LEFT_ENCODER_A 2
-#define LEFT_ENCODER_B 3
+#define LEFT_ENCODER_A 1
+#define LEFT_ENCODER_B 2
 #define RIGHT_ENCODER_A 4
 #define RIGHT_ENCODER_B 5
 #define COMPRESSOR_PRESSURE_SW 8
