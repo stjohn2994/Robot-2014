@@ -73,6 +73,8 @@ public:
 
 		// Set the experation to 1.5 times the loop speed.
 		robotDrive.SetExpiration(LOOP_PERIOD*1.5);
+		
+		leftDriveEncoder.SetReverseDirection(true);
 	}
 	
 	// CheckLoad
@@ -83,7 +85,7 @@ public:
 	bool CheckLoad()
 	{
 		// Switch is normally closed
-		if (loading && !winchSwitch.Get()) 
+		if (loading && winchSwitch.Get()) 
 		{
 			winch.Set(0.0);
 			loaded = true;
@@ -125,39 +127,9 @@ public:
 	{
 		robotDrive.SetSafetyEnabled(false);
 		                
-		LaunchCatapult();
-
-		leftDriveEncoder.Reset();
-		int dist = ENCODER_DIST;
-		int reading = 0;
-		// The encoder.Reset() method seems not to set Get() values back to zero,
-		// so we use a variable to capture the initial value.
-		int initial = leftDriveEncoder.Get();
-		
-		// Start moving the robot
-		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
-
-		while (IsAutonomous() && (reading <= dist))
-		{
-			reading = (leftDriveEncoder.Get() - initial);
-		}
-		
-		robotDrive.Drive(0.0, 0.0);
-		
-//		robotDrive.SetSafetyEnabled(false);
-//		
 //		LaunchCatapult();
 //		
-//		InitiateLoad();
-//		
-//		intake.Set(1.0);
-//		
-//		while (CheckLoad());
-//		
-//		arm.Set(DoubleSolenoid::kForward);
-//		
-//		LaunchCatapult();
-//		
+//		leftDriveEncoder.Start();
 //		leftDriveEncoder.Reset();
 //		int dist = ENCODER_DIST;
 //		int reading = 0;
@@ -166,7 +138,7 @@ public:
 //		int initial = leftDriveEncoder.Get();
 //		
 //		// Start moving the robot
-//		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
+//		robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
 //
 //		while (IsAutonomous() && (reading <= dist))
 //		{
@@ -174,6 +146,42 @@ public:
 //		}
 //		
 //		robotDrive.Drive(0.0, 0.0);
+		
+		robotDrive.SetSafetyEnabled(false);
+		
+//		LaunchCatapult();
+		
+//		InitiateLoad();
+		
+		intake.Set(1.0);
+		
+//		while (CheckLoad());
+		
+		arm.Set(DoubleSolenoid::kForward);
+		
+		Wait(AUTO_PICKUP_WAIT);
+		
+//		LaunchCatapult();
+		
+		Wait(AUTO_SHOOT_WAIT);
+		
+		leftDriveEncoder.Start();
+		leftDriveEncoder.Reset();
+		int dist = ENCODER_DIST;
+		int reading = 0;
+		// The encoder.Reset() method seems not to set Get() values back to zero,
+		// so we use a variable to capture the initial value.
+		int initial = leftDriveEncoder.Get();
+		
+		// Start moving the robot
+		robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
+
+		while (IsAutonomous() && (reading <= dist))
+		{
+			reading = (leftDriveEncoder.Get() - initial);
+		}
+		
+		robotDrive.Drive(0.0, 0.0);
 	}
 
 	// HandleDriverInputs
@@ -193,7 +201,7 @@ public:
 			shifters.Set(DoubleSolenoid::kReverse);
 		}
 
-		robotDrive.ArcadeDrive(rightStick);
+		robotDrive.ArcadeDrive(rightStick.GetY(), -rightStick.GetX());
 	}
 
 	// HandleShooter
@@ -225,27 +233,30 @@ public:
 		if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed && armDown)
 		{
 			arm.Set(DoubleSolenoid::kReverse);
+			intake.Set(0.0);
 			armDown = false;
 		}
 		else if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed)
 		{
 			arm.Set(DoubleSolenoid::kForward);
+			intake.Set(1.0);
 			armDown = true;
 		}
 
-		if (gamepad.GetDPadEvent(EGamepad::kUp) == kEventClosed)
-		{
-			intake.Set(1.0);
-		}
-		else if (gamepad.GetDPadEvent(EGamepad::kUp) == kEventOpened)
-		{
-			intake.Set(0.0);
-		}
-		if(gamepad.GetDPadEvent(EGamepad::kDown) == kEventClosed)
+		if (gamepad.GetDPadEvent(BUTTON_INTAKE_FWD) == kEventClosed)
 		{
 			intake.Set(-1.0);
 		}
-		else if (gamepad.GetDPadEvent(EGamepad::kDown) == kEventOpened)
+		else if (gamepad.GetDPadEvent(BUTTON_INTAKE_FWD) == kEventOpened)
+		{
+			intake.Set(0.0);
+		}
+		
+		if(gamepad.GetDPadEvent(BUTTON_INTAKE_BWD) == kEventClosed)
+		{
+			intake.Set(1.0);
+		}
+		if (gamepad.GetDPadEvent(BUTTON_INTAKE_BWD) == kEventOpened)
 		{
 			intake.Set(0.0);
 		}
@@ -296,7 +307,7 @@ public:
 		int bigSanity = 0;
 		
 		loading = false;
-		loaded = !winchSwitch.Get();
+		loaded = winchSwitch.Get();
 
 		RegisterButtons();
 		gamepad.Update();
@@ -311,7 +322,7 @@ public:
 			HandleDriverInputs();
 			HandleShooter();
 			HandleArm();
-			HandleEject();
+//			HandleEject();
 
 			while (!clock.HasPeriodPassed(LOOP_PERIOD));
 			clock.Reset();
@@ -333,7 +344,30 @@ public:
 	// * 
 	void Test()
 	{
-
+		shifters.Set(DoubleSolenoid::kForward);
+		
+		leftDriveEncoder.Start();
+		leftDriveEncoder.Reset();
+		
+		int start = leftDriveEncoder.Get();
+		
+		while (IsTest()) {
+			if (rightStick.GetRawButton(7)) {
+				robotDrive.ArcadeDrive(rightStick.GetY(), -rightStick.GetX());
+			}
+			else {
+				robotDrive.ArcadeDrive(rightStick.GetY()/2, -rightStick.GetX()/2);
+			}
+			
+			if (gamepad.GetEvent(4) == kEventClosed) {
+				start = leftDriveEncoder.Get();
+			}
+			
+			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "lde: %d", leftDriveEncoder.Get() - start);
+			dsLCD->UpdateLCD();
+			
+			gamepad.Update();
+		}
 	}
 };
 
