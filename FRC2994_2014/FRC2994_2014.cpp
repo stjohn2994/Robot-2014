@@ -90,9 +90,10 @@ public:
 			winch.Set(0.0);
 			loaded = true;
 			loading = false;
+			return false;
 		}
 		
-		return loaded;
+		return true;
 	}
 	
 	// InitiateLoad
@@ -125,9 +126,15 @@ public:
 	//	* Drive robot forward ENCODER_DIST ticks.
 	void Autonomous()
 	{
-		robotDrive.SetSafetyEnabled(false);
-		                
+		// SAFETY AND SANITY - SET ALL TO ZERO
+		intake.Set(0.0);
+		winch.Set(0.0);
+		
+//		robotDrive.SetSafetyEnabled(false);
+		
 //		LaunchCatapult();
+//		
+//		Wait(1.0);
 //		
 //		leftDriveEncoder.Start();
 //		leftDriveEncoder.Reset();
@@ -146,22 +153,45 @@ public:
 //		}
 //		
 //		robotDrive.Drive(0.0, 0.0);
+//		
+//		leftDriveEncoder.Stop();
+		
+		loaded = winchSwitch.Get();
+				
+		loading = !loaded;
 		
 		robotDrive.SetSafetyEnabled(false);
 		
-//		LaunchCatapult();
+		LaunchCatapult();
 		
-//		InitiateLoad();
+		Wait(AUTO_SHOOT_WAIT);
+		
+		InitiateLoad();
+		
+		if (loaded == true) {
+			dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "BLAME JACK IT FAILED");
+			dsLCD->UpdateLCD();
+			return;
+		}
 		
 		intake.Set(1.0);
 		
-//		while (CheckLoad());
+		while (CheckLoad());
+		
+		if (loading == true) {
+			dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "BLAME JACK IT FAILED");
+			dsLCD->UpdateLCD();
+			return;
+		}
 		
 		arm.Set(DoubleSolenoid::kForward);
 		
 		Wait(AUTO_PICKUP_WAIT);
 		
-//		LaunchCatapult();
+		intake.Set(0.0);
+		arm.Set(DoubleSolenoid::kReverse);
+		
+		LaunchCatapult();
 		
 		Wait(AUTO_SHOOT_WAIT);
 		
@@ -182,6 +212,28 @@ public:
 		}
 		
 		robotDrive.Drive(0.0, 0.0);
+		
+		reading = leftDriveEncoder.Get();
+		dist = reading - ENCODER_BACK_DIST;
+		
+		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
+		
+		dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "b: %d", reading);
+		dsLCD->UpdateLCD();
+		
+		while (IsAutonomous() && (reading >= dist)) {
+			dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "%d", reading);
+			dsLCD->UpdateLCD();
+			reading = (leftDriveEncoder.Get());
+		}
+		
+		robotDrive.Drive(0.0, 0.0);
+		
+		leftDriveEncoder.Stop();
+		
+		// SAFETY AND SANITY - SET ALL TO ZERO
+		intake.Set(0.0);
+		winch.Set(0.0);
 	}
 
 	// HandleDriverInputs
@@ -233,19 +285,17 @@ public:
 		if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed && armDown)
 		{
 			arm.Set(DoubleSolenoid::kReverse);
-			intake.Set(0.0);
 			armDown = false;
 		}
 		else if (gamepad.GetEvent(BUTTON_ARM) == kEventClosed)
 		{
 			arm.Set(DoubleSolenoid::kForward);
-			intake.Set(1.0);
 			armDown = true;
 		}
 
 		if (gamepad.GetDPadEvent(BUTTON_INTAKE_FWD) == kEventClosed)
 		{
-			intake.Set(-1.0);
+			intake.Set(-0.85);
 		}
 		else if (gamepad.GetDPadEvent(BUTTON_INTAKE_FWD) == kEventOpened)
 		{
@@ -254,7 +304,7 @@ public:
 		
 		if(gamepad.GetDPadEvent(BUTTON_INTAKE_BWD) == kEventClosed)
 		{
-			intake.Set(1.0);
+			intake.Set(0.85);
 		}
 		if (gamepad.GetDPadEvent(BUTTON_INTAKE_BWD) == kEventOpened)
 		{
@@ -297,6 +347,12 @@ public:
 	//	* Calls all the above methods
 	void OperatorControl()
 	{
+		// SAFETY AND SANITY - SET ALL TO ZERO
+		intake.Set(0.0);
+		winch.Set(0.0);
+		
+		arm.Set(DoubleSolenoid::kReverse);
+		
 		/* TODO: Investigate. At least year's (GTR East) competition, we reached the conclusion that disabling this was 
 		 * the only way we could get out robot code to work (reliably). Should this be set to false?
 		 */ 
@@ -337,6 +393,10 @@ public:
 			leftStick.Update();
 			dsLCD->UpdateLCD();
 		}
+		
+		// SAFETY AND SANITY - SET ALL TO ZERO
+		intake.Set(0.0);
+		winch.Set(0.0);
 	}
 
 	// Runs during test mode

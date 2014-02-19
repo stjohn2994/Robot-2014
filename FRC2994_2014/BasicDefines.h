@@ -67,16 +67,18 @@
 // # of encoder ticks to drive for in auto
 // TODO: Determine empirically.
 #define ENCODER_DIST 2385
+// Backwards drive for drivers
+#define ENCODER_BACK_DIST 5500
 // Time to wait after running motor to launch shooter before turning motor off
 #define CATAPULT_SHOOT_WAIT 0.75
 // Wait before turning off the eject pistons to ensure the ball is out.
 #define EJECT_WAIT 2.0
 // Speed to drive at in autonomous
-#define AUTO_DRIVE_SPEED 0.5
+#define AUTO_DRIVE_SPEED 0.75
 // Amount of time to wait until we shoot after collecting second ball
-#define AUTO_PICKUP_WAIT 0.5
+#define AUTO_PICKUP_WAIT 2.0
 // Amount of time to wait until we move after shooting second ball.
-#define AUTO_SHOOT_WAIT 0.5
+#define AUTO_SHOOT_WAIT 0.25
 
 #ifdef PLYBOY
 #define ROBOT_NAME "PLYBOY"
