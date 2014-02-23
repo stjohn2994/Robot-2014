@@ -73,10 +73,10 @@ public:
 
 		// Set the experation to 1.5 times the loop speed.
 		robotDrive.SetExpiration(LOOP_PERIOD*1.5);
-		
+
 		leftDriveEncoder.SetReverseDirection(true);
 	}
-	
+
 	// CheckLoad
 	//	* Checks if the winch switch has been pressed.
 	//		----> If yes, makes sure the state of the motors and variables is correct.
@@ -92,10 +92,10 @@ public:
 			loading = false;
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	// InitiateLoad
 	//	* Begins a load of the catapult by running the winch motor.
 	void InitiateLoad()
@@ -106,7 +106,7 @@ public:
 			loading = true;
 		}
 	}
-	
+
 	// LaunchCatapult
 	//	* If in the correct state to launch (loaded), launches the catapult.
 	void LaunchCatapult()
@@ -126,75 +126,44 @@ public:
 	//	* Drive robot forward ENCODER_DIST ticks.
 	void Autonomous()
 	{
+		// STEP 1: Set all of the states.
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
 		winch.Set(0.0);
 		
-//		robotDrive.SetSafetyEnabled(false);
-		
-//		LaunchCatapult();
-//		
-//		Wait(1.0);
-//		
-//		leftDriveEncoder.Start();
-//		leftDriveEncoder.Reset();
-//		int dist = ENCODER_DIST;
-//		int reading = 0;
-//		// The encoder.Reset() method seems not to set Get() values back to zero,
-//		// so we use a variable to capture the initial value.
-//		int initial = leftDriveEncoder.Get();
-//		
-//		// Start moving the robot
-//		robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
-//
-//		while (IsAutonomous() && (reading <= dist))
-//		{
-//			reading = (leftDriveEncoder.Get() - initial);
-//		}
-//		
-//		robotDrive.Drive(0.0, 0.0);
-//		
-//		leftDriveEncoder.Stop();
-		
+		arm.Set(DoubleSolenoid::kReverse);
+
 		loaded = winchSwitch.Get();
-				
+
 		loading = !loaded;
-		
+
 		robotDrive.SetSafetyEnabled(false);
 		
+		// STEP 2: Launch the catapult
 		LaunchCatapult();
-		
+
 		Wait(AUTO_SHOOT_WAIT);
 		
+		// STEP 3: Load the catapult, turn on the intake and put the arm down
 		InitiateLoad();
-		
-		if (loaded == true) {
-			dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "BLAME JACK IT FAILED");
-			dsLCD->UpdateLCD();
-			return;
-		}
-		
+
 		intake.Set(1.0);
-		
+
 		while (CheckLoad());
-		
-		if (loading == true) {
-			dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "BLAME JACK IT FAILED");
-			dsLCD->UpdateLCD();
-			return;
-		}
-		
+
 		arm.Set(DoubleSolenoid::kForward);
-		
+
 		Wait(AUTO_PICKUP_WAIT);
-		
+
 		intake.Set(0.0);
 		arm.Set(DoubleSolenoid::kReverse);
 		
+		// Shoot again!
 		LaunchCatapult();
-		
+
 		Wait(AUTO_SHOOT_WAIT);
 		
+		// STEP 4: Drive forward past the line.
 		leftDriveEncoder.Start();
 		leftDriveEncoder.Reset();
 		int dist = ENCODER_DIST;
@@ -202,7 +171,7 @@ public:
 		// The encoder.Reset() method seems not to set Get() values back to zero,
 		// so we use a variable to capture the initial value.
 		int initial = leftDriveEncoder.Get();
-		
+
 		// Start moving the robot
 		robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
 
@@ -210,27 +179,24 @@ public:
 		{
 			reading = (leftDriveEncoder.Get() - initial);
 		}
-		
+
 		robotDrive.Drive(0.0, 0.0);
+
+		// STEP 5: Drive backwards as close to the truss as we can.
 		
 		reading = leftDriveEncoder.Get();
 		dist = reading - ENCODER_BACK_DIST;
-		
+
 		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
-		
-		dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "b: %d", reading);
-		dsLCD->UpdateLCD();
-		
+
 		while (IsAutonomous() && (reading >= dist)) {
-			dsLCD->PrintfLine(DriverStationLCD::kUser_Line6, "%d", reading);
-			dsLCD->UpdateLCD();
 			reading = (leftDriveEncoder.Get());
 		}
-		
+
 		robotDrive.Drive(0.0, 0.0);
-		
+
 		leftDriveEncoder.Stop();
-		
+
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
 		winch.Set(0.0);
@@ -301,7 +267,7 @@ public:
 		{
 			intake.Set(0.0);
 		}
-		
+
 		if(gamepad.GetDPadEvent(BUTTON_INTAKE_BWD) == kEventClosed)
 		{
 			intake.Set(0.85);
@@ -350,9 +316,9 @@ public:
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
 		winch.Set(0.0);
-		
+
 		arm.Set(DoubleSolenoid::kReverse);
-		
+
 		/* TODO: Investigate. At least year's (GTR East) competition, we reached the conclusion that disabling this was 
 		 * the only way we could get out robot code to work (reliably). Should this be set to false?
 		 */ 
@@ -361,14 +327,14 @@ public:
 		Timer clock;
 		int sanity = 0;
 		int bigSanity = 0;
-		
+
 		loading = false;
 		loaded = winchSwitch.Get();
 
 		RegisterButtons();
 		gamepad.Update();
 		leftStick.Update();
-		
+
 		compressor.Start();
 
 		while (IsOperatorControl()&& IsEnabled())
@@ -378,7 +344,7 @@ public:
 			HandleDriverInputs();
 			HandleShooter();
 			HandleArm();
-//			HandleEject();
+			//			HandleEject();
 
 			while (!clock.HasPeriodPassed(LOOP_PERIOD));
 			clock.Reset();
@@ -393,7 +359,7 @@ public:
 			leftStick.Update();
 			dsLCD->UpdateLCD();
 		}
-		
+
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
 		winch.Set(0.0);
@@ -405,12 +371,12 @@ public:
 	void Test()
 	{
 		shifters.Set(DoubleSolenoid::kForward);
-		
+
 		leftDriveEncoder.Start();
 		leftDriveEncoder.Reset();
-		
+
 		int start = leftDriveEncoder.Get();
-		
+
 		while (IsTest()) {
 			if (rightStick.GetRawButton(7)) {
 				robotDrive.ArcadeDrive(rightStick.GetY(), -rightStick.GetX());
@@ -418,14 +384,14 @@ public:
 			else {
 				robotDrive.ArcadeDrive(rightStick.GetY()/2, -rightStick.GetX()/2);
 			}
-			
+
 			if (gamepad.GetEvent(4) == kEventClosed) {
 				start = leftDriveEncoder.Get();
 			}
-			
+
 			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "lde: %d", leftDriveEncoder.Get() - start);
 			dsLCD->UpdateLCD();
-			
+
 			gamepad.Update();
 		}
 	}
