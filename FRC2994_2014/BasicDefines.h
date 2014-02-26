@@ -52,8 +52,8 @@
 
 // Gamepad
 #define BUTTON_SHOOT 1
-#define BUTTON_INTAKE_FWD EGamepad::kUp
-#define BUTTON_INTAKE_BWD EGamepad::kDown
+#define BUTTON_INTAKE_COLLECT EGamepad::kUp
+#define BUTTON_INTAKE_EJECT EGamepad::kDown
 // LOAD THE WINCH
 #define BUTTON_LOAD 4
 #define BUTTON_ARM 5
@@ -61,6 +61,9 @@
 
 // Motor speeds
 #define WINCH_FWD -1.0
+// Intake speeds
+#define INTAKE_COLLECT -0.85
+#define INTAKE_EJECT 0.85
 
 // Misc.
 #define LOOP_PERIOD 0.01

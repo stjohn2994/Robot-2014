@@ -126,6 +126,8 @@ public:
 	//	* Drive robot forward ENCODER_DIST ticks.
 	void Autonomous()
 	{
+		robotDrive.SetSafetyEnabled(false);
+		
 		// STEP 1: Set all of the states.
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
@@ -134,10 +136,8 @@ public:
 		arm.Set(DoubleSolenoid::kReverse);
 
 		loaded = winchSwitch.Get();
-
-		loading = !loaded;
-
-		robotDrive.SetSafetyEnabled(false);
+		
+		loading = false;
 		
 		// STEP 2: Launch the catapult
 		LaunchCatapult();
@@ -259,20 +259,20 @@ public:
 			armDown = true;
 		}
 
-		if (gamepad.GetDPadEvent(BUTTON_INTAKE_FWD) == kEventClosed)
+		if (gamepad.GetDPadEvent(BUTTON_INTAKE_COLLECT) == kEventClosed)
 		{
-			intake.Set(-0.85);
+			intake.Set(INTAKE_COLLECT);
 		}
-		else if (gamepad.GetDPadEvent(BUTTON_INTAKE_FWD) == kEventOpened)
+		else if (gamepad.GetDPadEvent(BUTTON_INTAKE_COLLECT) == kEventOpened)
 		{
 			intake.Set(0.0);
 		}
 
-		if(gamepad.GetDPadEvent(BUTTON_INTAKE_BWD) == kEventClosed)
+		if(gamepad.GetDPadEvent(BUTTON_INTAKE_EJECT) == kEventClosed)
 		{
-			intake.Set(0.85);
+			intake.Set(INTAKE_EJECT);
 		}
-		if (gamepad.GetDPadEvent(BUTTON_INTAKE_BWD) == kEventOpened)
+		if (gamepad.GetDPadEvent(BUTTON_INTAKE_EJECT) == kEventOpened)
 		{
 			intake.Set(0.0);
 		}
