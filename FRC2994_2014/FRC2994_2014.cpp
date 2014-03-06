@@ -32,6 +32,7 @@ class FRC2994_2014 : public SimpleRobot
 
 	// Misc.
 	Timer ejectTimer;
+	Timer loadingTimer;
 	DriverStationLCD *dsLCD;
 	Compressor compressor;
 
@@ -84,11 +85,32 @@ public:
 	//	  the motor is shut off as soon as possible.
 	bool CheckLoad()
 	{
+		if (!IsEnabled())
+		{
+			winch.Set(0.0);
+			loaded = false;
+			loading = false;
+			return false;
+		}
 		// Switch is normally closed
 		if (loading && winchSwitch.Get()) 
 		{
 			winch.Set(0.0);
+			// Stop and reset the timer
+			loadingTimer.Stop();
+			loadingTimer.Reset();
 			loaded = true;
+			loading = false;
+			return false;
+		}
+		// Did the timer expire? Yikes shut down the winch
+		if (loadingTimer.HasPeriodPassed(10))
+		{
+			winch.Set(0.0);
+			// Stop and reset the timer
+			loadingTimer.Stop();
+			loadingTimer.Reset();
+			loaded = false;
 			loading = false;
 			return false;
 		}
@@ -103,6 +125,8 @@ public:
 		if (!loaded)
 		{
 			winch.Set(WINCH_FWD);
+			// Start a timer
+			loadingTimer.Start();
 			loading = true;
 		}
 	}
@@ -114,7 +138,15 @@ public:
 		if (loaded)
 		{
 			winch.Set(WINCH_FWD);
-			Wait(CATAPULT_SHOOT_WAIT);
+			for (int i = 0; i < 75; i++)
+			{
+				if (IsOperatorControl())
+				{
+					robotDrive.ArcadeDrive(rightStick.GetY(), -rightStick.GetX());
+				}
+				Wait (0.01);
+			}
+//			Wait(CATAPULT_SHOOT_WAIT);
 			winch.Set(0.0);
 			loaded = false;
 		}
@@ -142,60 +174,63 @@ public:
 		// STEP 2: Launch the catapult
 		LaunchCatapult();
 
-		Wait(AUTO_SHOOT_WAIT);
-		
-		// STEP 3: Load the catapult, turn on the intake and put the arm down
-		InitiateLoad();
-
-		intake.Set(1.0);
-
-		while (CheckLoad());
-
-		arm.Set(DoubleSolenoid::kForward);
-
-		Wait(AUTO_PICKUP_WAIT);
-
-		intake.Set(0.0);
-		arm.Set(DoubleSolenoid::kReverse);
-		
-		// Shoot again!
-		LaunchCatapult();
-
-		Wait(AUTO_SHOOT_WAIT);
-		
-		// STEP 4: Drive forward past the line.
-		leftDriveEncoder.Start();
-		leftDriveEncoder.Reset();
-		int dist = ENCODER_DIST;
-		int reading = 0;
-		// The encoder.Reset() method seems not to set Get() values back to zero,
-		// so we use a variable to capture the initial value.
-		int initial = leftDriveEncoder.Get();
-
-		// Start moving the robot
-		robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
-
-		while (IsAutonomous() && (reading <= dist))
-		{
-			reading = (leftDriveEncoder.Get() - initial);
-		}
-
-		robotDrive.Drive(0.0, 0.0);
-
-		// STEP 5: Drive backwards as close to the truss as we can.
-		
-		reading = leftDriveEncoder.Get();
-		dist = reading - ENCODER_BACK_DIST;
-
-		robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
-
-		while (IsAutonomous() && (reading >= dist)) {
-			reading = (leftDriveEncoder.Get());
-		}
-
-		robotDrive.Drive(0.0, 0.0);
-
-		leftDriveEncoder.Stop();
+//		Wait(AUTO_SHOOT_WAIT);
+//		
+//		// STEP 3: Load the catapult, turn on the intake and put the arm down
+//		InitiateLoad();
+//
+//		intake.Set(1.0);
+//
+//		while (CheckLoad());
+//
+//		if (IsEnabled())
+//		{
+//			arm.Set(DoubleSolenoid::kForward);
+//	
+//			Wait(AUTO_PICKUP_WAIT);
+//	
+//			intake.Set(0.0);
+//			arm.Set(DoubleSolenoid::kReverse);
+//			
+//			// Shoot again!
+//			LaunchCatapult();
+//	
+//			Wait(AUTO_SHOOT_WAIT);
+//			
+//			// STEP 4: Drive forward past the line.
+//			leftDriveEncoder.Start();
+//			leftDriveEncoder.Reset();
+//			int dist = ENCODER_DIST;
+//			int reading = 0;
+//			// The encoder.Reset() method seems not to set Get() values back to zero,
+//			// so we use a variable to capture the initial value.
+//			int initial = leftDriveEncoder.Get();
+//	
+//			// Start moving the robot
+//			robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
+//	
+//			while (IsAutonomous() && (reading <= dist))
+//			{
+//				reading = (leftDriveEncoder.Get() - initial);
+//			}
+//	
+//			robotDrive.Drive(0.0, 0.0);
+//	
+//			// STEP 5: Drive backwards as close to the truss as we can.
+//			
+//			reading = leftDriveEncoder.Get();
+//			dist = reading - ENCODER_BACK_DIST;
+//	
+//			robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
+//	
+//			while (IsAutonomous() && (reading >= dist)) {
+//				reading = (leftDriveEncoder.Get());
+//			}
+//	
+//			robotDrive.Drive(0.0, 0.0);
+//	
+//			leftDriveEncoder.Stop();
+//		}
 
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
@@ -337,7 +372,7 @@ public:
 
 		compressor.Start();
 
-		while (IsOperatorControl()&& IsEnabled())
+		while (IsOperatorControl() && IsEnabled())
 		{
 			clock.Start();
 
@@ -346,7 +381,7 @@ public:
 			HandleArm();
 			//			HandleEject();
 
-			while (!clock.HasPeriodPassed(LOOP_PERIOD));
+			while (!clock.HasPeriodPassed(LOOP_PERIOD)); // add an IsEnabled???
 			clock.Reset();
 			sanity++;
 			if (sanity >= 100)
