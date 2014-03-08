@@ -62,14 +62,15 @@
 // Motor speeds
 #define WINCH_FWD -1.0
 // Intake speeds
-#define INTAKE_COLLECT -0.85
-#define INTAKE_EJECT 0.85
+#define INTAKE_COLLECT -0.95
+#define INTAKE_EJECT 0.95
 
 // Misc.
 #define LOOP_PERIOD 0.01
 // # of encoder ticks to drive for in auto
 // TODO: Determine empirically.
-#define ENCODER_DIST 2385
+#define INTO_ZONE_DIST 2385
+#define SHOT_POSN_DIST 1431
 // Backwards drive for drivers
 #define ENCODER_BACK_DIST 5500
 // Time to wait after running motor to launch shooter before turning motor off
