@@ -34,6 +34,7 @@ class FRC2994_2014 : public SimpleRobot
 	Timer ejectTimer;
 	Timer loadingTimer;
 	DriverStationLCD *dsLCD;
+	DriverStation *ds;
 	Compressor compressor;
 
 	bool loaded;
@@ -72,6 +73,8 @@ public:
 		dsLCD->PrintfLine(DriverStationLCD::kUser_Line2, __DATE__ " " __TIME__);
 		dsLCD->UpdateLCD();
 
+		ds = DriverStation::GetInstance();
+		
 		// Set the experation to 1.5 times the loop speed.
 		robotDrive.SetExpiration(LOOP_PERIOD*1.5);
 
@@ -151,8 +154,91 @@ public:
 			loaded = false;
 		}
 	}
+	
+	void Drive (float speed, int dist)
+	{
+		leftDriveEncoder.Reset();
+		leftDriveEncoder.Start();
+		
+		int reading = 0;
+		dist = abs(dist);
+		
+		// The encoder.Reset() method seems not to set Get() values back to zero,
+		// so we use a variable to capture the initial value.
+		dsLCD->PrintfLine(DriverStationLCD::kUser_Line2, "initial=%d\n", leftDriveEncoder.Get());
+		dsLCD->UpdateLCD();
 
-	// Autonomous
+		// Start moving the robot
+		robotDrive.Drive(speed, 0.0);
+		
+		while ((IsAutonomous()) && (reading <= dist))
+		{
+			reading = abs(leftDriveEncoder.Get());				
+			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "reading=%d\n", reading);
+			dsLCD->UpdateLCD();
+		}
+
+		robotDrive.Drive(0.0, 0.0);
+		
+		leftDriveEncoder.Stop();
+	}	
+
+	// Test Autonomous
+	void TestAutonomous()
+	{
+		robotDrive.SetSafetyEnabled(false);
+		
+		// STEP 1: Set all of the states.
+		// SAFETY AND SANITY - SET ALL TO ZERO
+		loaded = winchSwitch.Get();
+		loading = false;
+		intake.Set(0.0);
+		winch.Set(0.0);
+		
+		// STEP 2: Move forward to optimum shooting position
+		Drive(-AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
+		
+		// STEP 3: Drop the arm for a clean shot
+		arm.Set(DoubleSolenoid::kForward);
+		Wait(1.0); // Ken
+		
+		// STEP 4: Launch the catapult
+		LaunchCatapult();
+		
+		Wait (1.0); // Ken
+
+		if (ds->GetDigitalIn(0))
+		{
+			// STEP 5: Start the intake motor and backup to our origin position to pick up another ball
+			InitiateLoad();
+			intake.Set(-INTAKE_COLLECT);
+			while (CheckLoad());
+			Drive(AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
+			Wait(1.0);
+			
+			// STEP 6: Shut off the intake, bring up the arm and move to shooting position
+			intake.Set(0.0);
+			arm.Set(DoubleSolenoid::kReverse);
+			Wait (1.0);
+			Drive(-AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
+			
+			// Step 7: drop the arm for a clean shot and shoot
+			arm.Set(DoubleSolenoid::kForward);
+			
+			// UNTESTED KICKED OFF FIELD
+			Wait(1.0); // Ken
+			LaunchCatapult();
+		}
+		
+		// Get us fully into the zone for 5 points
+		Drive(-AUTO_DRIVE_SPEED, INTO_ZONE_DIST - SHOT_POSN_DIST);
+		
+		// SAFETY AND SANITY - SET ALL TO ZERO
+		intake.Set(0.0);
+		winch.Set(0.0);
+	}
+
+	// Real Autonomous
 	//	* Code to be run autonomously for the first ten (10) seconds of the match.
 	//	* Launch catapult
 	//	* Drive robot forward ENCODER_DIST ticks.
@@ -162,80 +248,87 @@ public:
 		
 		// STEP 1: Set all of the states.
 		// SAFETY AND SANITY - SET ALL TO ZERO
+		loaded = winchSwitch.Get();
+		loading = false;
 		intake.Set(0.0);
 		winch.Set(0.0);
 		
-		arm.Set(DoubleSolenoid::kReverse);
-
-		loaded = winchSwitch.Get();
+		// STEP 2: Move forward to optimum shooting position
+		Drive(-AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
 		
-		loading = false;
+		// STEP 3: Drop the arm for a clean shot
+		arm.Set(DoubleSolenoid::kForward);
+		Wait(1.0); // Ken
 		
-		// STEP 2: Launch the catapult
+		// STEP 4: Launch the catapult
 		LaunchCatapult();
-
-//		Wait(AUTO_SHOOT_WAIT);
-//		
-//		// STEP 3: Load the catapult, turn on the intake and put the arm down
-//		InitiateLoad();
-//
-//		intake.Set(1.0);
-//
-//		while (CheckLoad());
-//
-//		if (IsEnabled())
-//		{
-//			arm.Set(DoubleSolenoid::kForward);
-//	
-//			Wait(AUTO_PICKUP_WAIT);
-//	
-//			intake.Set(0.0);
-//			arm.Set(DoubleSolenoid::kReverse);
-//			
-//			// Shoot again!
-//			LaunchCatapult();
-//	
-//			Wait(AUTO_SHOOT_WAIT);
-//			
-//			// STEP 4: Drive forward past the line.
-//			leftDriveEncoder.Start();
-//			leftDriveEncoder.Reset();
-//			int dist = ENCODER_DIST;
-//			int reading = 0;
-//			// The encoder.Reset() method seems not to set Get() values back to zero,
-//			// so we use a variable to capture the initial value.
-//			int initial = leftDriveEncoder.Get();
-//	
-//			// Start moving the robot
-//			robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
-//	
-//			while (IsAutonomous() && (reading <= dist))
-//			{
-//				reading = (leftDriveEncoder.Get() - initial);
-//			}
-//	
-//			robotDrive.Drive(0.0, 0.0);
-//	
-//			// STEP 5: Drive backwards as close to the truss as we can.
-//			
-//			reading = leftDriveEncoder.Get();
-//			dist = reading - ENCODER_BACK_DIST;
-//	
-//			robotDrive.Drive(AUTO_DRIVE_SPEED, 0.0);
-//	
-//			while (IsAutonomous() && (reading >= dist)) {
-//				reading = (leftDriveEncoder.Get());
-//			}
-//	
-//			robotDrive.Drive(0.0, 0.0);
-//	
-//			leftDriveEncoder.Stop();
-//		}
+		Wait (1.0); // Ken
+		
+		// Get us fully into the zone for 5 points
+		Drive(-AUTO_DRIVE_SPEED, INTO_ZONE_DIST - SHOT_POSN_DIST);
 
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
 		winch.Set(0.0);
-	}
+	}	
+		
+//		robotDrive.SetSafetyEnabled(false);
+//		
+//		// STEP 1: Set all of the states.
+//		
+//		// SAFETY AND SANITY - SET ALL TO ZERO
+//		intake.Set(0.0);
+//		winch.Set(0.0);
+//		
+//		arm.Set(DoubleSolenoid::kForward);
+//		
+//		Wait(1.0); // Ken
+//
+//		loaded = winchSwitch.Get();
+//		
+//		loading = false;
+//		
+//		// STEP 2: Launch the catapult
+//		LaunchCatapult();
+//
+//		Wait (1.0); // Ken
+//		
+//		arm.Set(DoubleSolenoid::kReverse);
+//
+//		Wait (1.0); // Ken
+//
+//		// STEP 4: Drive forward past the line.
+//		leftDriveEncoder.Reset();
+//		leftDriveEncoder.Start();
+//		
+//		int dist = ENCODER_DIST;			
+//		int reading = 0;
+//		
+//		// The encoder.Reset() method seems not to set Get() values back to zero,
+//		// so we use a variable to capture the initial value.
+//		int initial = leftDriveEncoder.Get();
+//		
+//		// Start moving the robot
+//		robotDrive.Drive(-AUTO_DRIVE_SPEED, 0.0);
+//		
+//		dsLCD->PrintfLine(DriverStationLCD::kUser_Line2, "initial=%d\n", initial);
+//		dsLCD->UpdateLCD();
+//
+//		while ((IsAutonomous()) && (reading <= dist))
+//		{
+//			reading = (leftDriveEncoder.Get() - initial);				
+//			dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, "reading=%d\n", reading);
+//			dsLCD->UpdateLCD();
+//		}
+//
+//		robotDrive.Drive(0.0, 0.0);
+//		
+//		leftDriveEncoder.Stop();
+//
+//		// SAFETY AND SANITY - SET ALL TO ZERO
+//		intake.Set(0.0);
+//		winch.Set(0.0);
+//	}
 
 	// HandleDriverInputs
 	//	* Drive motors according to joystick values
