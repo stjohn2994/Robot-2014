@@ -37,7 +37,7 @@ public:
 		kRearRightMotor
 	} MotorType;
 
-	ERobotDrive(SpeedController &frontLeftMotor, SpeedController &rearLeftMotor,
+	ERobotDrive(SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController&,SpeedController&,
 				SpeedController &frontRightMotor, SpeedController &rearRightMotor);
 
 	virtual ~ERobotDrive();
@@ -74,10 +74,10 @@ protected:
 	double m_maxOutput;
 	bool m_deleteSpeedControllers;
 	SpeedController *m_frontLeftMotor;
-	SpeedController *m_frontCenterMotor;
+	SpeedController *m_centerLeftMotor;
 	SpeedController *m_frontRightMotor;
 	SpeedController *m_rearLeftMotor;
-	SpeedController *m_rearCenterMotor;
+	SpeedController *m_centerRightMotor;
 	SpeedController *m_rearRightMotor;
 	MotorSafetyHelper *m_safetyHelper;
 	
@@ -89,8 +89,8 @@ private:
 		if (m_frontRightMotor) motors++;
 		if (m_rearLeftMotor) motors++;
 		if (m_rearRightMotor) motors++;
-		if (m_rearCenterMotor) motors++;
-		if (m_frontCenterMotor) motors++;
+		if (m_centerRightMotor) motors++;
+		if (m_centerLeftMotor) motors++;
 		return motors;
 	}
 	DISALLOW_COPY_AND_ASSIGN(ERobotDrive);

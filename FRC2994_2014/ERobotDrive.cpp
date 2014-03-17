@@ -33,10 +33,10 @@ const int32_t ERobotDrive::kMaxNumberOfMotors;
  */
 void ERobotDrive::InitRobotDrive() {
 	m_frontLeftMotor = NULL;
-	m_frontCenterMotor = NULL;
+	m_centerLeftMotor = NULL;
 	m_frontRightMotor = NULL;
 	m_rearRightMotor = NULL;
-	m_rearCenterMotor = NULL;
+	m_centerRightMotor = NULL;
 	m_rearLeftMotor = NULL;
 	m_sensitivity = 0.5;
 	m_maxOutput = 1.0;
@@ -50,8 +50,8 @@ ERobotDrive::ERobotDrive(SpeedController &frontLeftMotor, SpeedController &rearL
 	InitRobotDrive();
 	m_frontLeftMotor = &frontLeftMotor;
 	m_rearLeftMotor = &rearLeftMotor;
-	m_frontCenterMotor = &frontCenterMotor;
-	m_rearCenterMotor = &rearCenterMotor;
+	m_centerLeftMotor = &frontCenterMotor;
+	m_centerRightMotor = &rearCenterMotor;
 	m_frontRightMotor = &frontRightMotor;
 	m_rearRightMotor = &rearRightMotor;
 	for (int32_t i=0; i < kMaxNumberOfMotors; i++)
@@ -73,8 +73,8 @@ ERobotDrive::~ERobotDrive()
 		delete m_rearLeftMotor;
 		delete m_frontRightMotor;
 		delete m_rearRightMotor;
-		delete m_rearCenterMotor;
-		delete m_frontCenterMotor;
+		delete m_centerRightMotor;
+		delete m_centerLeftMotor;
 	}
 	delete m_safetyHelper;
 }
@@ -284,14 +284,14 @@ void ERobotDrive::SetLeftRightMotorOutputs(float leftOutput, float rightOutput)
 
 	if (m_frontLeftMotor != NULL)
 		m_frontLeftMotor->Set(Limit(leftOutput) * m_invertedMotors[kFrontLeftMotor] * m_maxOutput, syncGroup);
-	if (m_frontCenterMotor != NULL)
-		m_frontCenterMotor->Set(Limit(leftOutput) * m_invertedMotors[kFrontCenterMotor] * m_maxOutput, syncGroup);
+	if (m_centerLeftMotor != NULL)
+		m_centerLeftMotor->Set(Limit(leftOutput) * m_invertedMotors[kFrontCenterMotor] * m_maxOutput, syncGroup);
 	m_rearLeftMotor->Set(Limit(leftOutput) * m_invertedMotors[kRearLeftMotor] * m_maxOutput, syncGroup);
 	
 	if (m_frontRightMotor != NULL)
 		m_frontRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kFrontRightMotor] * m_maxOutput, syncGroup);
-	if (m_frontCenterMotor != NULL)
-		m_frontCenterMotor->Set(-Limit(rightOutput) * m_invertedMotors[kFrontCenterMotor] * m_maxOutput, syncGroup);
+	if (m_centerRightMotor != NULL)
+		m_centerRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kFrontCenterMotor] * m_maxOutput, syncGroup);
 	m_rearRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kRearRightMotor] * m_maxOutput, syncGroup);
 
 	CANJaguar::UpdateSyncGroup(syncGroup);
@@ -425,6 +425,6 @@ void ERobotDrive::StopMotor()
 	if (m_frontRightMotor != NULL) m_frontRightMotor->Disable();
 	if (m_rearLeftMotor != NULL) m_rearLeftMotor->Disable();
 	if (m_rearRightMotor != NULL) m_rearRightMotor->Disable();
-	if (m_frontCenterMotor != NULL) m_frontCenterMotor->Disable();
-	if (m_rearCenterMotor != NULL) m_rearCenterMotor->Disable();
+	if (m_centerLeftMotor != NULL) m_centerLeftMotor->Disable();
+	if (m_centerRightMotor != NULL) m_centerRightMotor->Disable();
 }
