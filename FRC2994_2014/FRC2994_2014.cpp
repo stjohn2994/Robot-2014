@@ -14,7 +14,7 @@ class FRC2994_2014 : public SimpleRobot
 	WINCH_MOTOR winch;
 
 	// Robot drive
-	RobotDrive robotDrive;
+	ERobotDrive robotDrive;
 
 	// USB devices
 	EJoystick rightStick;
