@@ -44,14 +44,14 @@ void ERobotDrive::InitRobotDrive() {
 	m_safetyHelper->SetSafetyEnabled(true);
 }
 
-ERobotDrive::ERobotDrive(SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController &frontCenterMotor,
-						SpeedController &rearCenterMotor, SpeedController &frontRightMotor, SpeedController &rearRightMotor)
+ERobotDrive::ERobotDrive(SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController &centerLeftMotor,
+						SpeedController &centerRightMotor, SpeedController &frontRightMotor, SpeedController &rearRightMotor)
 {
 	InitRobotDrive();
 	m_frontLeftMotor = &frontLeftMotor;
 	m_rearLeftMotor = &rearLeftMotor;
-	m_centerLeftMotor = &frontCenterMotor;
-	m_centerRightMotor = &rearCenterMotor;
+	m_centerLeftMotor = &centerLeftMotor;
+	m_centerRightMotor = &centerRightMotor;
 	m_frontRightMotor = &frontRightMotor;
 	m_rearRightMotor = &rearRightMotor;
 	for (int32_t i=0; i < kMaxNumberOfMotors; i++)
@@ -285,13 +285,13 @@ void ERobotDrive::SetLeftRightMotorOutputs(float leftOutput, float rightOutput)
 	if (m_frontLeftMotor != NULL)
 		m_frontLeftMotor->Set(Limit(leftOutput) * m_invertedMotors[kFrontLeftMotor] * m_maxOutput, syncGroup);
 	if (m_centerLeftMotor != NULL)
-		m_centerLeftMotor->Set(Limit(leftOutput) * m_invertedMotors[kFrontCenterMotor] * m_maxOutput, syncGroup);
+		m_centerLeftMotor->Set(Limit(leftOutput) * m_invertedMotors[kCenterLeftMotor] * m_maxOutput, syncGroup);
 	m_rearLeftMotor->Set(Limit(leftOutput) * m_invertedMotors[kRearLeftMotor] * m_maxOutput, syncGroup);
 	
 	if (m_frontRightMotor != NULL)
 		m_frontRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kFrontRightMotor] * m_maxOutput, syncGroup);
 	if (m_centerRightMotor != NULL)
-		m_centerRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kFrontCenterMotor] * m_maxOutput, syncGroup);
+		m_centerRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kCenterLeftMotor] * m_maxOutput, syncGroup);
 	m_rearRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kRearRightMotor] * m_maxOutput, syncGroup);
 
 	CANJaguar::UpdateSyncGroup(syncGroup);

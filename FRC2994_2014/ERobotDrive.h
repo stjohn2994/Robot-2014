@@ -4,8 +4,8 @@
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
 
-#ifndef ROBOTDRIVE_H_
-#define ROBOTDRIVE_H_
+#ifndef EROBOTDRIVE_H_
+#define EROBOTDRIVE_H_
 
 #include "ErrorBase.h"
 #include <stdlib.h>
@@ -30,14 +30,14 @@ public:
 	typedef enum
 	{
 		kFrontLeftMotor,
-		kFrontCenterMotor,
 		kFrontRightMotor,
 		kRearLeftMotor,
-		kRearCenterMotor,
-		kRearRightMotor
+		kRearRightMotor,
+		kCenterLeftMotor,
+		kCenterRightMotor
 	} MotorType;
 
-	ERobotDrive(SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController&,SpeedController&,
+	ERobotDrive(SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController &centerLeftMotor, SpeedController &centerRightMotor,
 				SpeedController &frontRightMotor, SpeedController &rearRightMotor);
 
 	virtual ~ERobotDrive();

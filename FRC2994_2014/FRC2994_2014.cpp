@@ -1,5 +1,6 @@
 #include "WPILib.h"
 #include "BasicDefines.h"
+#include "ERobotDrive.h"
 #include "EJoystick.h"
 #include "EGamepad.h"
 #include "EDigitalInput.h"
@@ -10,12 +11,13 @@ class FRC2994_2014 : public SimpleRobot
 	// Motor controllers.
 	LEFT_DRIVE_MOTOR leftFrontDrive, leftRearDrive;
 	RIGHT_DRIVE_MOTOR rightFrontDrive, rightRearDrive;
+	CENTER_DRIVE_MOTOR leftCenterDrive, rightCenterDrive;
 	INTAKE_MOTOR intake;
 	WINCH_MOTOR winch;
 
 	// Robot drive
 	ERobotDrive robotDrive;
-
+	
 	// USB devices
 	EJoystick rightStick;
 	EJoystick leftStick;
@@ -47,9 +49,11 @@ public:
 		leftRearDrive(LEFT_REAR_DRIVE_PWM),
 		rightFrontDrive(RIGHT_FRONT_DRIVE_PWM),
 		rightRearDrive(RIGHT_REAR_DRIVE_PWM),
+		leftCenterDrive(CENTER_LEFT_DRIVE_PWM),
+		rightCenterDrive(CENTER_RIGHT_DRIVE_PWM),
 		intake(INTAKE_MOTOR_PWM),
 		winch(WINCH_MOTOR_PWM),
-		robotDrive(&leftFrontDrive, &leftRearDrive, &rightFrontDrive, &rightRearDrive),
+		robotDrive(leftFrontDrive, leftRearDrive, leftCenterDrive, rightCenterDrive, rightFrontDrive, rightRearDrive),
 		rightStick(RIGHT_DRIVE_STICK),
 		leftStick(LEFT_DRIVE_STICK),
 		gamepad(GAMEPAD_PORT),

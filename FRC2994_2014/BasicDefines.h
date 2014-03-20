@@ -20,6 +20,8 @@
 #define LEFT_REAR_DRIVE_PWM 3    // cable 44 / 26
 #define RIGHT_FRONT_DRIVE_PWM 2  // cable 43 / 22
 #define RIGHT_REAR_DRIVE_PWM 1   // cable 41 / 23
+#define CENTER_LEFT_DRIVE_PWM 7  // UNKNOWN CABLE
+#define CENTER_RIGHT_DRIVE_PWM 8 // UNKNOWN CABLE
 #define INTAKE_MOTOR_PWM 5       // cable 34 / 21
 #define WINCH_MOTOR_PWM 6        // cable 40 / 27
 
@@ -88,6 +90,7 @@
 #define ROBOT_NAME "PLYBOY"
 #define LEFT_DRIVE_MOTOR Jaguar
 #define RIGHT_DRIVE_MOTOR Jaguar
+#define CENTER_DRIVE_MOTOR Jaguar
 #define INTAKE_MOTOR Jaguar
 #define WINCH_MOTOR Jaguar
 #endif // PLYBOY
@@ -96,6 +99,7 @@
 #define ROBOT_NAME "Comp. Bot"
 #define LEFT_DRIVE_MOTOR Talon
 #define RIGHT_DRIVE_MOTOR Talon
+#define CENTER_DRIVE_MOTOR Talon
 #define INTAKE_MOTOR Talon
 #define WINCH_MOTOR Talon
 #endif // ROBOT_A
@@ -104,6 +108,7 @@
 #define ROBOT_NAME "Practice Bot"
 #define LEFT_DRIVE_MOTOR Victor
 #define RIGHT_DRIVE_MOTOR Victor
+#define CENTER_DRIVE_MOTOR Victor
 #define INTAKE_MOTOR Victor
 #define WINCH_MOTOR Victor
 #endif // ROBOT_B
