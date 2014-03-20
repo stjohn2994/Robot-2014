@@ -23,7 +23,8 @@
 #define CENTER_LEFT_DRIVE_PWM 7  // UNKNOWN CABLE
 #define CENTER_RIGHT_DRIVE_PWM 8 // UNKNOWN CABLE
 #define INTAKE_MOTOR_PWM 5       // cable 34 / 21
-#define WINCH_MOTOR_PWM 6        // cable 40 / 27
+#define RIGHT_WINCH_MOTOR_PWM 6        // cable 40 / 27
+#define LEFT_WINCH_MOTOR_PWM 9
 
 // Solenoids
 #define SHIFTER_A 1 // cable 0
