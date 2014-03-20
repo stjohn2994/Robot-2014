@@ -1,5 +1,6 @@
 #include "WPILib.h"
 #include "BasicDefines.h"
+#include "ERobotDrive.h"
 #include "EJoystick.h"
 #include "EGamepad.h"
 #include "EDigitalInput.h"
@@ -10,12 +11,13 @@ class FRC2994_2014 : public SimpleRobot
 	// Motor controllers.
 	LEFT_DRIVE_MOTOR leftFrontDrive, leftRearDrive;
 	RIGHT_DRIVE_MOTOR rightFrontDrive, rightRearDrive;
+	CENTER_DRIVE_MOTOR leftCenterDrive, rightCenterDrive;
 	INTAKE_MOTOR intake;
-	WINCH_MOTOR winch;
+	WINCH_MOTOR rightWinch, leftWinch;
 
 	// Robot drive
-	RobotDrive robotDrive;
-
+	ERobotDrive robotDrive;
+	
 	// USB devices
 	EJoystick rightStick;
 	EJoystick leftStick;
@@ -47,9 +49,12 @@ public:
 		leftRearDrive(LEFT_REAR_DRIVE_PWM),
 		rightFrontDrive(RIGHT_FRONT_DRIVE_PWM),
 		rightRearDrive(RIGHT_REAR_DRIVE_PWM),
+		leftCenterDrive(CENTER_LEFT_DRIVE_PWM),
+		rightCenterDrive(CENTER_RIGHT_DRIVE_PWM),
 		intake(INTAKE_MOTOR_PWM),
-		winch(WINCH_MOTOR_PWM),
-		robotDrive(&leftFrontDrive, &leftRearDrive, &rightFrontDrive, &rightRearDrive),
+		rightWinch(RIGHT_WINCH_MOTOR_PWM),
+		leftWinch(LEFT_WINCH_MOTOR_PWM),
+		robotDrive(leftFrontDrive, leftRearDrive, leftCenterDrive, rightCenterDrive, rightFrontDrive, rightRearDrive),
 		rightStick(RIGHT_DRIVE_STICK),
 		leftStick(LEFT_DRIVE_STICK),
 		gamepad(GAMEPAD_PORT),
@@ -90,7 +95,8 @@ public:
 	{
 		if (!IsEnabled())
 		{
-			winch.Set(0.0);
+			rightWinch.Set(0.0);
+			leftWinch.Set(0.0);
 			loaded = false;
 			loading = false;
 			return false;
@@ -98,7 +104,8 @@ public:
 		// Switch is normally closed
 		if (loading && winchSwitch.Get()) 
 		{
-			winch.Set(0.0);
+			rightWinch.Set(0.0);
+			leftWinch.Set(0.0);
 			// Stop and reset the timer
 			loadingTimer.Stop();
 			loadingTimer.Reset();
@@ -109,7 +116,8 @@ public:
 		// Did the timer expire? Yikes shut down the winch
 		if (loadingTimer.HasPeriodPassed(10))
 		{
-			winch.Set(0.0);
+			rightWinch.Set(0.0);
+			leftWinch.Set(0.0);
 			// Stop and reset the timer
 			loadingTimer.Stop();
 			loadingTimer.Reset();
@@ -127,7 +135,8 @@ public:
 	{
 		if (!loaded)
 		{
-			winch.Set(WINCH_FWD);
+			rightWinch.Set(WINCH_FWD);
+			leftWinch.Set(WINCH_FWD);
 			// Start a timer
 			loadingTimer.Start();
 			loading = true;
@@ -140,7 +149,8 @@ public:
 	{
 		if (loaded)
 		{
-			winch.Set(WINCH_FWD);
+			rightWinch.Set(WINCH_FWD);
+			leftWinch.Set(WINCH_FWD);
 			for (int i = 0; i < 75; i++)
 			{
 				if (IsOperatorControl())
@@ -150,7 +160,8 @@ public:
 				Wait (0.01);
 			}
 //			Wait(CATAPULT_SHOOT_WAIT);
-			winch.Set(0.0);
+			rightWinch.Set(0.0);
+			leftWinch.Set(0.0);
 			loaded = false;
 		}
 	}
@@ -193,7 +204,8 @@ public:
 		loaded = winchSwitch.Get();
 		loading = false;
 		intake.Set(0.0);
-		winch.Set(0.0);
+		rightWinch.Set(0.0);
+		leftWinch.Set(0.0);
 		
 		// STEP 2: Move forward to optimum shooting position
 		Drive(-AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
@@ -235,7 +247,8 @@ public:
 		
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
-		winch.Set(0.0);
+		rightWinch.Set(0.0);
+		leftWinch.Set(0.0);
 	}
 
 	// Real Autonomous
@@ -251,7 +264,8 @@ public:
 		loaded = winchSwitch.Get();
 		loading = false;
 		intake.Set(0.0);
-		winch.Set(0.0);
+		rightWinch.Set(0.0);
+		leftWinch.Set(0.0);
 		
 		// STEP 2: Move forward to optimum shooting position
 		Drive(-AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
@@ -269,7 +283,8 @@ public:
 
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
-		winch.Set(0.0);
+		rightWinch.Set(0.0);
+		leftWinch.Set(0.0);
 	}	
 		
 //		robotDrive.SetSafetyEnabled(false);
@@ -443,7 +458,8 @@ public:
 	{
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
-		winch.Set(0.0);
+		rightWinch.Set(0.0);
+		leftWinch.Set(0.0);
 
 		arm.Set(DoubleSolenoid::kReverse);
 
@@ -490,7 +506,8 @@ public:
 
 		// SAFETY AND SANITY - SET ALL TO ZERO
 		intake.Set(0.0);
-		winch.Set(0.0);
+		rightWinch.Set(0.0);
+		leftWinch.Set(0.0);
 	}
 
 	// Runs during test mode
