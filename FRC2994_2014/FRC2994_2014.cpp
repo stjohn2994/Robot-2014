@@ -136,7 +136,7 @@ public:
 		if (!loaded)
 		{
 			rightWinch.Set(WINCH_FWD);
-			leftWinch.Set(WINCH_FWD);
+			leftWinch.Set(-WINCH_FWD);
 			// Start a timer
 			loadingTimer.Start();
 			loading = true;
@@ -150,7 +150,7 @@ public:
 		if (loaded)
 		{
 			rightWinch.Set(WINCH_FWD);
-			leftWinch.Set(WINCH_FWD);
+			leftWinch.Set(-WINCH_FWD);
 			for (int i = 0; i < 75; i++)
 			{
 				if (IsOperatorControl())
