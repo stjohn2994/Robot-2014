@@ -63,7 +63,7 @@
 #define BUTTON_PASS 7
 
 // Motor speeds
-#define WINCH_FWD -1.0
+#define WINCH_FWD 1.0
 // Intake speeds
 #define INTAKE_COLLECT -0.95
 #define INTAKE_EJECT 0.95
