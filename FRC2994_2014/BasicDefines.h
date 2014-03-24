@@ -77,7 +77,7 @@
 // Backwards drive for drivers
 #define ENCODER_BACK_DIST 5500
 // Time to wait after running motor to launch shooter before turning motor off
-#define CATAPULT_SHOOT_WAIT 0.75
+#define CATAPULT_SHOOT_WAIT 0.1
 // Wait before turning off the eject pistons to ensure the ball is out.
 #define EJECT_WAIT 2.0
 // Speed to drive at in autonomous

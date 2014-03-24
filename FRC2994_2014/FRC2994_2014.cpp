@@ -75,7 +75,7 @@ public:
 
 		dsLCD->Clear();
 		dsLCD->PrintfLine(DriverStationLCD::kUser_Line1, ROBOT_NAME);
-		dsLCD->PrintfLine(DriverStationLCD::kUser_Line2, __DATE__ " " __TIME__);
+		dsLCD->PrintfLine(DriverStationLCD::kUser_Line3, __DATE__ " " __TIME__);
 		dsLCD->UpdateLCD();
 
 		ds = DriverStation::GetInstance();
@@ -151,7 +151,7 @@ public:
 		{
 			rightWinch.Set(WINCH_FWD);
 			leftWinch.Set(-WINCH_FWD);
-			for (int i = 0; i < 75; i++)
+			for (int i = 0; i < 37; i++)
 			{
 				if (IsOperatorControl())
 				{
