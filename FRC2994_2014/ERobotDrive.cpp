@@ -291,7 +291,7 @@ void ERobotDrive::SetLeftRightMotorOutputs(float leftOutput, float rightOutput)
 	if (m_frontRightMotor != NULL)
 		m_frontRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kFrontRightMotor] * m_maxOutput, syncGroup);
 	if (m_centerRightMotor != NULL)
-		m_centerRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kCenterLeftMotor] * m_maxOutput, syncGroup);
+		m_centerRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kCenterRightMotor] * m_maxOutput, syncGroup);
 	m_rearRightMotor->Set(-Limit(rightOutput) * m_invertedMotors[kRearRightMotor] * m_maxOutput, syncGroup);
 
 	CANJaguar::UpdateSyncGroup(syncGroup);

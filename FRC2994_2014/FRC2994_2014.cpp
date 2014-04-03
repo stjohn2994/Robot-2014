@@ -151,6 +151,7 @@ public:
 		{
 			rightWinch.Set(WINCH_FWD);
 			leftWinch.Set(-WINCH_FWD);
+			// Change if "limit switch not hitting" problem occurs. make 75.
 			for (int i = 0; i < 37; i++)
 			{
 				if (IsOperatorControl())
@@ -351,12 +352,12 @@ public:
 	//		----> ASSUMES kForward = high gear
 	void HandleDriverInputs()
 	{
-		if(kEventOpened == leftStick.GetEvent(BUTTON_SHIFT))
+		if(kEventOpened == rightStick.GetEvent(BUTTON_SHIFT))
 		{
 			// Shift into high gear.
 			shifters.Set(DoubleSolenoid::kForward);
 		}
-		else if(kEventClosed == leftStick.GetEvent(BUTTON_SHIFT))
+		else if(kEventClosed == rightStick.GetEvent(BUTTON_SHIFT))
 		{
 			// Shift into low gear.
 			shifters.Set(DoubleSolenoid::kReverse);
@@ -443,7 +444,7 @@ public:
 	//	* Register all the buttons required
 	void RegisterButtons()
 	{
-		leftStick.EnableButton(BUTTON_SHIFT);
+		rightStick.EnableButton(BUTTON_SHIFT);
 		gamepad.EnableButton(BUTTON_LOAD);
 		gamepad.EnableButton(BUTTON_SHOOT);
 		gamepad.EnableButton(BUTTON_ARM);
@@ -477,7 +478,7 @@ public:
 
 		RegisterButtons();
 		gamepad.Update();
-		leftStick.Update();
+		rightStick.Update();
 
 		compressor.Start();
 
@@ -489,7 +490,7 @@ public:
 			HandleShooter();
 			HandleArm();
 			//			HandleEject();
-
+			
 			while (!clock.HasPeriodPassed(LOOP_PERIOD)); // add an IsEnabled???
 			clock.Reset();
 			sanity++;
@@ -500,7 +501,7 @@ public:
 				dsLCD->PrintfLine(DriverStationLCD::kUser_Line4, "%d", bigSanity);
 			}
 			gamepad.Update();
-			leftStick.Update();
+			rightStick.Update();
 			dsLCD->UpdateLCD();
 		}
 
