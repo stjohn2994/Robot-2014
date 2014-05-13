@@ -196,7 +196,7 @@ public:
 	}	
 
 	// Test Autonomous
-	void TestAutonomous()
+	void Autonomous()
 	{
 		robotDrive.SetSafetyEnabled(false);
 		
@@ -220,27 +220,29 @@ public:
 		
 		Wait (1.0); // Ken
 
-		if (ds->GetDigitalIn(0))
+		if (ds->GetDigitalIn(1))
 		{
 			// STEP 5: Start the intake motor and backup to our origin position to pick up another ball
 			InitiateLoad();
 			intake.Set(-INTAKE_COLLECT);
 			while (CheckLoad());
 			Drive(AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
-			Wait(1.0);
+			Wait(1.0); // For the ball to collect
 			
 			// STEP 6: Shut off the intake, bring up the arm and move to shooting position
 			intake.Set(0.0);
 			arm.Set(DoubleSolenoid::kReverse);
-			Wait (1.0);
+			Wait (1.0); // "Settle down"
 			Drive(-AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
 			
 			// Step 7: drop the arm for a clean shot and shoot
 			arm.Set(DoubleSolenoid::kForward);
 			
+			Drive(AUTO_DRIVE_SPEED, SHOT_POSN_DIST);
+			
 			// UNTESTED KICKED OFF FIELD
-			Wait(1.0); // Ken
-			LaunchCatapult();
+			Wait(1.0); // For arm to go down
+//			LaunchCatapult();
 		}
 		
 		// Get us fully into the zone for 5 points
@@ -256,7 +258,7 @@ public:
 	//	* Code to be run autonomously for the first ten (10) seconds of the match.
 	//	* Launch catapult
 	//	* Drive robot forward ENCODER_DIST ticks.
-	void Autonomous()
+	void TestAutonomous()
 	{
 		robotDrive.SetSafetyEnabled(false);
 		
