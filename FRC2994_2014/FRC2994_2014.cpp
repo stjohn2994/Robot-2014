@@ -242,7 +242,7 @@ public:
 			
 			// UNTESTED KICKED OFF FIELD
 			Wait(1.0); // For arm to go down
-//			LaunchCatapult();
+			LaunchCatapult();
 		}
 		
 		// Get us fully into the zone for 5 points
