@@ -52,6 +52,7 @@
 
 // Left Joystick
 #define BUTTON_SHIFT 7
+#define BUTTON_REVERSE 6
 
 // Gamepad
 #define BUTTON_SHOOT 1

@@ -354,18 +354,25 @@ public:
 	//		----> ASSUMES kForward = high gear
 	void HandleDriverInputs()
 	{
-		if(kEventOpened == rightStick.GetEvent(BUTTON_SHIFT))
+		if (kEventOpened == rightStick.GetEvent(BUTTON_SHIFT))
 		{
 			// Shift into high gear.
 			shifters.Set(DoubleSolenoid::kForward);
 		}
-		else if(kEventClosed == rightStick.GetEvent(BUTTON_SHIFT))
+		else if (kEventClosed == rightStick.GetEvent(BUTTON_SHIFT))
 		{
 			// Shift into low gear.
 			shifters.Set(DoubleSolenoid::kReverse);
 		}
-
-		robotDrive.ArcadeDrive(rightStick.GetY(), -rightStick.GetX());
+		
+		if (kStateClosed == rightStick.GetState(BUTTON_REVERSE))
+		{
+			robotDrive.ArcadeDrive(-rightStick.GetY(), -rightStick.GetX());
+		}
+		else
+		{
+			robotDrive.ArcadeDrive(rightStick.GetY(), -rightStick.GetX());
+		}
 	}
 
 	// HandleShooter
@@ -447,6 +454,7 @@ public:
 	void RegisterButtons()
 	{
 		rightStick.EnableButton(BUTTON_SHIFT);
+		rightStick.EnableButton(BUTTON_REVERSE);
 		gamepad.EnableButton(BUTTON_LOAD);
 		gamepad.EnableButton(BUTTON_SHOOT);
 		gamepad.EnableButton(BUTTON_ARM);
